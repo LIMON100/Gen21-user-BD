@@ -1,0 +1,27 @@
+{
+  "coupon_id":"CTS50",
+  "note":"Note",
+  "address":{
+    "id":1,
+    "description":"Hello",
+    "address":"81 Bashir Uddin Rd, Dhaka 1205, Bangladesh",
+    "latitude":23.7488392,
+    "longitude":90.3842343
+  },
+  "service":[
+    {
+      "service_type":"service",
+      "e_service_id":1,
+      "quantity":10,
+      "schedule_time":"2022-04-03 13:57:23",
+      "schedule_date":"2022-04-03 13:56:41"
+    },
+    {
+      "service_type":"sub_service",
+      "e_service_id":2,
+      "quantity":10,
+      "schedule_time":"2022-04-03 13:57:23",
+      "schedule_date":"2022-04-03 13:56:41"
+    }
+  ]
+}

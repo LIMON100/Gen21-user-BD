@@ -1,0 +1,58 @@
+{
+   "data":[
+      {
+         "title":"For Cleaning",
+         "providers":[
+
+            {
+               "id":"1",
+               "name":"Bd Cleaners",
+               "avg_rating":"4.5",
+               "review_count":"13",
+               "image_url":"https://i.ibb.co/Tr16Cqx/shutterstock-662337727.jpg"
+            },
+            {
+               "id":"2",
+               "name":"Robi Cleaners",
+               "avg_rating":"4.1",
+               "review_count":"20",
+               "image_url":"https://i.ibb.co/WkwsDGz/images.jpg"
+            },
+            {
+               "id":"3",
+               "name":"Clean Bd",
+               "avg_rating":"4.0",
+               "review_count":"10",
+               "image_url":"https://2rdnmg1qbg403gumla1v9i2h-wpengine.netdna-ssl.com/wp-content/uploads/sites/3/2018/11/cleanSick-628306310_770x533-650x428.jpg"
+            }
+         ]
+      },
+
+      {
+         "title":"For Shifting",
+         "providers":[
+            {
+               "id":"1",
+               "name":"Shift Bd",
+               "avg_rating":"4.5",
+               "review_count":"13",
+               "image_url":"https://i0.wp.com/basabodol.com/wp-content/uploads/2020/12/House-Shifting-Service-in-D.jpg?fit=800%2C450&ssl=1"
+            },
+            {
+               "id":"2",
+               "name":"Shift Expert",
+               "avg_rating":"4.1",
+               "review_count":"20",
+               "image_url":"https://image.shutterstock.com/image-photo/happy-team-businesspeople-moving-office-260nw-310974485.jpg"
+            },
+            {
+               "id":"3",
+               "name":"Bd Shift",
+               "avg_rating":"4.01",
+               "review_count":"14",
+               "image_url":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgcbPrn5QqvM0r5WB8e9a3dufL-l-aGfugUQ&usqp=CAU"
+            }
+         ]
+      }
+   ]
+}

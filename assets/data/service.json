@@ -1,0 +1,46 @@
+{
+   "data":{
+      "id":"1",
+      "is_favourite":"”false”",
+      "name":"Home Cleaning",
+      "avg_rating":"4.5",
+      "review_count":"13",
+      "price":null,
+      "min_price":"10",
+      "max_price":"25",
+      "details":"test description",
+      "faq":"",
+      "images":[
+         {
+            "image_url":"https://i.ibb.co/yRBJ7Sc/download.jpg"
+         },
+         {
+            "image_url":"https://i.ibb.co/C6HMzQ2/images.jpg"
+         }
+      ],
+      "services":[
+         {
+            "id":"1",
+            "name":"Home Cleaning and Disinfectting",
+            "price":null,
+            "min_price":"10",
+            "max_price":null,
+            "details":"test description",
+            "image_url":"https://i.ibb.co/Tr16Cqx/shutterstock-662337727.jpg",
+            "has_sub_type":"true",
+            "minimum_unit":null
+         },
+         {
+            "id":"2",
+            "name":"Home Cleaning and Disinfectting",
+            "price":null,
+            "min_price":"10",
+            "max_price":null,
+            "details":"test description",
+            "image_url":"https://i.ibb.co/WkwsDGz/images.jpg",
+            "has_sub_type":"false",
+            "minimum_unit":"1"
+         }
+      ]
+   }
+}

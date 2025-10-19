@@ -1,13 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:dio/dio.dart' as dio;
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:flutter/foundation.dart' as foundation;
 import 'package:get/get.dart';
 import 'package:home_services/app/models/orders_model.dart' as OrderModel;
-
 import '../../common/constant.dart';
 import '../../common/log_data.dart';
 import '../../common/uuid.dart';
@@ -78,24 +76,8 @@ class LaravelApiClient extends GetxService with ApiClient {
       _httpClient.interceptors.add(DioCacheManager(CacheConfig(baseUrl: getApiBaseUrl(""))).interceptor);
     }
 
-    // _optionsNetwork.receiveTimeout = 5000;
-    // _optionsNetwork.sendTimeout = 5000;
-
     return this;
   }
-
-  // Future<String> fetchUserData() async {
-  //   final response = await http.get(
-  //     Uri.parse('https://app.gen21.com.au/api/user?api_token=${authService.apiToken}'),
-  //   );
-  //   if (response.statusCode == 200) {
-  //     var _responseData = response.body;
-  //     return _responseData;
-  //   }
-  //   else {
-  //     throw Exception('Failed to load data');
-  //   }
-  // }
 
   Future<String> fetchUserData() async {
     final response = await http.get(
@@ -162,7 +144,6 @@ class LaravelApiClient extends GetxService with ApiClient {
   // New PAYMENT
   Future<void> makePaymentRequest(String bookingId, String cardNumber, String holderName, String ccv, String selectMonth, String selectYear) async {
     print("INSIDEPAYMENT");
-    // String endpoint = '$baseUrl/payment/create/eway/?api_token=${authService.apiToken}';
     String endpoint = '$baseUrl/payment/create/eway/?api_token=${authService.apiToken}&version=2';
 
     Map<String, dynamic> requestBody = {
@@ -180,9 +161,6 @@ class LaravelApiClient extends GetxService with ApiClient {
     try {
       final response = await http.post(
         Uri.parse(endpoint),
-        // headers: {
-        //   'Content-Type': 'application/json',
-        // },
         headers: <String, String>{'authorization': basicAuth, 'Content-Type': "application/json"},
         body: jsonEncode(requestBody),
       );
@@ -268,6 +246,31 @@ class LaravelApiClient extends GetxService with ApiClient {
     }
   }
 
+  Future<Map<String, dynamic>> initiateSSLCommerzPayment(String bookingId, String platform) async {
+    var _queryParameters = {
+      "api_token": authService.apiToken,
+      "booking_id": bookingId,
+      "type": "booking", // Or as per your requirement
+      "platform": platform, // "mobile" for Flutter, "web" for web
+    };
+    Uri _uri = getApiBaseUri("sslcommerz_payment/initiate").replace(queryParameters: _queryParameters);
+    Get.log(_uri.toString());
+
+    print("URL FOR SSL");
+    print(_uri);
+
+    var response = await _httpClient.postUri(_uri, options: _optionsNetwork);
+
+    print("SSLRESPOSNE");
+    print(response.toString());
+
+    if (response.data['success'] == true) {
+      return response.data['data']; // This should contain GatewayPageURL
+    } else {
+      throw Exception(response.data['message']);
+    }
+  }
+
   // New send REQUEST
   Future<bool> sendRequestAfterPayment(String bookingId) async {
     var _queryParameters = {
@@ -282,8 +285,6 @@ class LaravelApiClient extends GetxService with ApiClient {
     print(_queryParameters);
     final response = await _httpClient.postUri(
       _uri,
-      // headers: {'Content-Type': 'application/json'},
-      // body: jsonEncode(payload),
     );
 
     if (response.statusCode == 200) {
@@ -389,17 +390,6 @@ class LaravelApiClient extends GetxService with ApiClient {
     }
   }
 
-  // Future<List<Slide>> getHomeSlider() async {
-  //   Uri _uri = getApiBaseUri("slides");
-  //   Get.log(_uri.toString());
-  //   var response = await _httpClient.getUri(_uri, options: _optionsCache);
-  //   if (response.data['success'] == true) {
-  //     return response.data['data'].map<Slide>((obj) => Slide.fromJson(obj)).toList();
-  //   } else {
-  //     throw new Exception(response.data['message']);
-  //   }
-  // }
-
   Future<List<Slide>> getHomeSlider() async {
     Uri _uri = getApiBaseUri("slides");
     _uri = _uri.replace(
@@ -419,26 +409,6 @@ class LaravelApiClient extends GetxService with ApiClient {
       throw new Exception(response.data['message']);
     }
   }
-
-  // Future<User> getUser(User user) async {
-  //   if (!authService.isAuth) {
-  //     throw new Exception("You don't have the permission to access to this area!".tr + "[ getUser() ]");
-  //   }
-  //   var _queryParameters = {
-  //     'api_token': authService.apiToken,
-  //   };
-  //   Uri _uri = getApiBaseUri("user").replace(queryParameters: _queryParameters);
-  //   Get.log(_uri.toString());
-  //   var response = await _httpClient.getUri(
-  //     _uri,
-  //     options: _optionsNetwork,
-  //   );
-  //   if (response.data['success'] == true) {
-  //     return User.fromJson(response.data['data']);
-  //   } else {
-  //     throw new Exception(response.data['message']);
-  //   }
-  // }
 
   Future<User> getUser(User user) async {
     if (!authService.isAuth) {
@@ -461,22 +431,6 @@ class LaravelApiClient extends GetxService with ApiClient {
     }
   }
 
-  // Future<User> login(User user) async {
-  //   Uri _uri = getApiBaseUri("login");
-  //   printWrapped("gen_log login() ${json.encode(user.toJson())}");
-  //   Get.log(_uri.toString());
-  //   var response = await _httpClient.postUri(
-  //     _uri,
-  //     data: json.encode(user.toJson()),
-  //     options: _optionsNetwork,
-  //   );
-  //   if (response.data['success'] == true) {
-  //     response.data['data']['auth'] = true;
-  //     return User.fromJson(response.data['data']);
-  //   } else {
-  //     throw new Exception(response.data['message']);
-  //   }
-  // }
 
   Future<User> login(User user) async {
     Uri _uri = getApiBaseUri("login");
@@ -485,9 +439,6 @@ class LaravelApiClient extends GetxService with ApiClient {
         'version': '2',
       },
     );
-
-    print("LIMON");
-    print(_uri);
     printWrapped("gen_log login() ${json.encode(user.toJson())}");
     Get.log(_uri.toString());
     var response = await _httpClient.postUri(
@@ -503,38 +454,6 @@ class LaravelApiClient extends GetxService with ApiClient {
     }
   }
 
-  // Future<User> register(User user) async {
-  //   Uri _uri = getApiBaseUri("register");
-  //   Get.log(_uri.toString());
-  //   var response = await _httpClient.postUri(
-  //     _uri,
-  //     data: json.encode(user.toJson()),
-  //     options: _optionsNetwork,
-  //   );
-  //   if (response.data['success'] == true) {
-  //     response.data['data']['auth'] = true;
-  //     return User.fromJson(response.data['data']);
-  //   } else {
-  //     throw new Exception(response.data['message']);
-  //   }
-  // }
-  //
-  // Future<bool> sendResetLinkEmail(User user) async {
-  //   Uri _uri = getApiBaseUri("send_reset_link_email");
-  //   Get.log(_uri.toString());
-  //   user = new User(email: user.email);
-  //
-  //   var response = await _httpClient.postUri(
-  //     _uri,
-  //     data: json.encode(user.toJson()),
-  //     options: _optionsNetwork,
-  //   );
-  //   if (response.data['success'] == true) {
-  //     return true;
-  //   } else {
-  //     throw new Exception(response.data['message']);
-  //   }
-  // }
 
   Future<User> register(User user) async {
     Uri _uri = getApiBaseUri("register"); // Get the base Uri for /register
@@ -622,6 +541,7 @@ class LaravelApiClient extends GetxService with ApiClient {
       'orderBy': 'id',
       'sortedBy': 'desc',
       'version': '2',
+      'filter': 'my'
     };
     Uri _uri = getApiBaseUri("addresses").replace(queryParameters: _queryParameters);
     Get.log(_uri.toString());
@@ -803,27 +723,6 @@ class LaravelApiClient extends GetxService with ApiClient {
     return GService.fromJson(response.data);
   }
 
-  // Future<ServiceDetails.ServiceDetails> getServiceDetails(String id) async {
-  //   var _queryParameters = {
-  //     'with': 'eProvider;eProvider.taxes;categories',
-  //     'version': '2',
-  //   };
-  //   if (authService.isAuth) {
-  //     _queryParameters['api_token'] = authService.apiToken;
-  //   }
-  //   Uri _uri = getApiBaseUri("e_service_details?id=$id");
-  //   Get.log(_uri.toString());
-  //
-  //   print("SUBV");
-  //   print(_uri);
-  //   var response = await _httpClient.getUri(_uri, options: _optionsNetwork);
-  //   print("sdhbfhbash: ${response.toString()}");
-  //   print("sdhbfhbash success: ${response.data['success']} data: ${response.data['data']}");
-  //   // if (response.data['success'] == true) {
-  //   print("${response.data["data"].toString()}");
-  //   return ServiceDetails.ServiceDetails.fromJson(response.data);
-  // }
-
   Future<ServiceDetails.ServiceDetails> getServiceDetails(String id) async {
     Uri _uri = getApiBaseUri("e_service_details");
 
@@ -865,24 +764,6 @@ class LaravelApiClient extends GetxService with ApiClient {
     }
   }
 
-  // Future<List<Review>> getEProviderReviews(String eProviderId) async {
-  //   var _queryParameters = {
-  //     'with': 'eProviderReviews;eProviderReviews.user',
-  //     'only':
-  //         'eProviderReviews.id;eProviderReviews.review;eProviderReviews.rate;eProviderReviews.user;'
-  //   };
-  //   Uri _uri = getApiBaseUri("e_providers/$eProviderId")
-  //       .replace(queryParameters: _queryParameters);
-  //   Get.log(_uri.toString());
-  //   var response = await _httpClient.getUri(_uri, options: _optionsCache);
-  //   if (response.data['success'] == true) {
-  //     return response.data['data']['e_provider_reviews']
-  //         .map<Review>((obj) => Review.fromJson(obj))
-  //         .toList();
-  //   } else {
-  //     throw new Exception(response.data['message']);
-  //   }
-  // }
 
   Future<List<Review>> getEProviderReviews(String eProviderId) async {
     var _queryParameters = {'with': 'eProviderReviews;eProviderReviews.user', 'only': 'eProviderReviews.id;eProviderReviews.review;eProviderReviews.rate;eProviderReviews.user;','version': '2'};
@@ -1170,20 +1051,6 @@ class LaravelApiClient extends GetxService with ApiClient {
     }
   }
 
-  // Future<List<Category>> getAllCategories() async {
-  //   const _queryParameters = {
-  //     'orderBy': 'order',
-  //     'sortBy': 'asc',
-  //   };
-  //   Uri _uri = getApiBaseUri("categories").replace(queryParameters: _queryParameters);
-  //   Get.log(_uri.toString());
-  //   var response = await _httpClient.getUri(_uri, options: _optionsCache);
-  //   if (response.data['success'] == true) {
-  //     return response.data['data'].map<Category>((obj) => Category.fromJson(obj)).toList();
-  //   } else {
-  //     throw new Exception(response.data['message']);
-  //   }
-  // }
 
   Future<List<Category>> getAllCategories() async {
     const _queryParameters = {
@@ -2077,13 +1944,14 @@ class LaravelApiClient extends GetxService with ApiClient {
   Future<Setting> getSettings() async {
     Uri _uri = getApiBaseUri("settings");
     Get.log(_uri.toString());
+    print("seeting api call");
+
     var response = await _httpClient.getUri(_uri, options: _optionsNetwork);
     // printWrapped("kdsjknfsdjk response: ${response.toString()}");
     if (response.data['success'] == true) {
       return Setting.fromJson(response.data['data']);
     } else {
       print("kdsjknfsdjk exception happen in getSettings()");
-
       throw new Exception(response.data['message']);
     }
   }
@@ -2253,6 +2121,7 @@ class LaravelApiClient extends GetxService with ApiClient {
       'api_token': authService.apiToken,
       'version': '2'
     };
+
     print("api_token ${authService.apiToken}");
     Uri _uri = getApiBaseUri("booking-request").replace(queryParameters: _queryParameters);
 
@@ -2269,6 +2138,9 @@ class LaravelApiClient extends GetxService with ApiClient {
         },
       ),
     );
+
+    print("BOOKIING REQUEST1:");
+    print(response);
 
     printWrapped("responseSubmit2 ${response.data.toString()}");
     valueForResponse = response.data['data']['booking_id'];
@@ -2307,8 +2179,12 @@ class LaravelApiClient extends GetxService with ApiClient {
       ),
     );
 
+    print("BOOKIING REQUEST2:");
+    print(response);
+
     printWrapped("jnsdfsakdfaal response ${response.data.toString()}");
     printWrapped("jnsdfsakdfaal statusCode ${response.statusCode.toString()}");
+
     if (response.statusCode == 200 || response.statusCode == 201) {
       print("dfbhaadsa in if");
       print(OrderRequestResponseModel.OrderRequestResponse.fromJson(response.data));
@@ -2330,8 +2206,6 @@ class LaravelApiClient extends GetxService with ApiClient {
       'version': '2'
     };
     print("snfjsanjfnds api_token ${authService.apiToken}");
-    // var tempData = data.toJson();
-    // print("jsndjkfda tempData: ${tempData}");
     Uri _uri = getApiBaseUri("manual-booking-request").replace(queryParameters: _queryParameters);
 
     // _optionsNetwork.headers.c = 'application/json';

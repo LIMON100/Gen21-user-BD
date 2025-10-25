@@ -271,6 +271,37 @@ class LaravelApiClient extends GetxService with ApiClient {
     }
   }
 
+  Future<Map<String, dynamic>> getSSLCommerzStatus(String bookingId) async {
+    print("LaravelApiClient: Calling getSSLCommerzStatus for bookingId: $bookingId");
+    var _queryParameters = {
+      'api_token': authService.apiToken,
+      'version': '2', // Ensure version is included
+    };
+    // Adjust the endpoint to match your backend's implementation
+    Uri _uri = getApiBaseUri("sslcommerz_payment/status/$bookingId").replace(queryParameters: _queryParameters);
+    Get.log("getSSLCommerzStatus URL: ${_uri.toString()}");
+
+    try {
+      var response = await _httpClient.getUri(_uri, options: _optionsNetwork);
+      print("getSSLCommerzStatus response: Status Code = ${response.statusCode}, Data = ${response.data}");
+
+      if (response.statusCode == 200 && response.data != null) {
+        return response.data; // Expecting a structure like {"success": true, "data": {"status": "completed", ...}}
+      } else {
+        print("getSSLCommerzStatus failed: Status code ${response.statusCode}, Response: ${response.data}");
+        // If the API returns an error response but with 200 status, check for 'success: false'
+        if (response.data != null && response.data['success'] == false) {
+          throw Exception(response.data['message'] ?? 'Failed to get payment status.');
+        }
+        throw Exception('Failed to get payment status. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print("Exception in getSSLCommerzStatus: $e");
+      throw Exception('An error occurred while fetching payment status.');
+    }
+  }
+
+
   // New send REQUEST
   Future<bool> sendRequestAfterPayment(String bookingId) async {
     var _queryParameters = {

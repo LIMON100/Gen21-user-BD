@@ -334,7 +334,7 @@ class _PaymentAndRequestState extends State<PaymentAndRequest> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text("Service Payment"),
+        title: Text("Service Payment22"),
         automaticallyImplyLeading: false,
       ),
       body:isLoading

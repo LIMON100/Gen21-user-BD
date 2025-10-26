@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -15,9 +14,10 @@ import '../../home/views/home2_view.dart';
 import '../../new_payment_ui/after_payment/DeclinePayment.dart';
 import '../../root/controllers/root_controller.dart';
 import '../controllers/RequestController.dart';
+import 'WebViewScreen.dart';
 // import '../../service_request/controllers/RequestController.dart';
 
-class payrequest2 extends StatefulWidget {
+class sslpayment extends StatefulWidget {
   int bookingId;
   int orderId;
   String name;
@@ -28,15 +28,15 @@ class payrequest2 extends StatefulWidget {
   double totalPayableAmount;
   String serviceAmount;
   String service_info;
-  payrequest2({Key key, @required this.bookingId, @required this.orderId, @required this.name, @required this.address, @required this.phoneNumber, @required this.email,
+  sslpayment({Key key, @required this.bookingId, @required this.orderId, @required this.name, @required this.address, @required this.phoneNumber, @required this.email,
     @required this.amount, @required this.totalPayableAmount, @required this.serviceAmount, @required this.service_info}) : super(key: key);
 
   @override
-  _payreques2ttState createState() => _payreques2ttState();
+  _sslpaymentState createState() => _sslpaymentState();
 }
 
 
-class _payreques2ttState extends State<payrequest2> {
+class _sslpaymentState extends State<sslpayment> {
 
   RequestController controller = Get.put(RequestController());
   final AddToCartController _addToCartController = Get.put(AddToCartController());
@@ -78,6 +78,63 @@ class _payreques2ttState extends State<payrequest2> {
     callingSettings();
   }
 
+  Future<void> initiateSSLCommerzPaymentFlow() async {
+    if (widget.bookingId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Booking ID not found!"),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Initiating Payment...'),
+                SizedBox(height: 20),
+                CircularProgressIndicator(),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    try {
+      // Call your backend for SSLCommerz initiation
+      final paymentData = await _laravelApiClient.initiateSSLCommerzPayment(
+          widget.bookingId.toString(), "mobile");
+
+      Navigator.pop(context); // Close the dialog
+
+      final gatewayUrl = paymentData['GatewayPageURL'] as String;
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          // builder: (context) => WebViewScreen(url: gatewayUrl, bookingId: widget.bookingId, orderId: widget.orderId),
+          builder: (context) => WebViewScreen(url: gatewayUrl, bookingId: widget.bookingId),
+        ),
+      );
+
+    } catch (e) {
+      Navigator.pop(context); // Close the dialog
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error initiating payment: ${e.toString()}'),
+          duration: Duration(seconds: 3),
+        ),
+      );
+    }
+  }
 
   void callingSettings() async {
     final response = await http.get(Uri.parse('https://app.gen21.com.au/api/settings'));
@@ -173,7 +230,6 @@ class _payreques2ttState extends State<payrequest2> {
       },
     );
 
-
     selectedMonth = addLeadingZero(selectedMonth);
     selectedYear = selectedYear.substring(2);
 
@@ -196,15 +252,6 @@ class _payreques2ttState extends State<payrequest2> {
       await Future.delayed(const Duration(seconds: 1));
       onPressedButtonSendRequest();
 
-      // Navigate to AcceptPayment page after 2 seconds
-      // await Future.delayed(const Duration(seconds: 2));
-      // // Navigator.pushNamed(context,DeclinePayment());
-      // Navigator.pop(context);
-      // Navigator.of(context).push(
-      //   MaterialPageRoute(
-      //     builder: (context) => DeclinePayment(),
-      //   ),
-      // );
     }
     else {
       // Show snackbar with error message for 2 seconds
@@ -265,14 +312,7 @@ class _payreques2ttState extends State<payrequest2> {
 
       // Navigate to AcceptPayment page after 2 seconds
       await Future.delayed(const Duration(seconds: 2));
-      // Navigator.pushNamed(context,DeclinePayment());
       Get.find<RootController>().changePage(1);
-      // Navigator.pop(context);
-      // Navigator.of(context).push(
-      //   MaterialPageRoute(
-      //     builder: (context) => DeclinePayment(),
-      //   ),
-      // );
     }
     else {
       // Show snackbar with error message for 2 seconds
@@ -335,15 +375,6 @@ class _payreques2ttState extends State<payrequest2> {
       );
       await Future.delayed(const Duration(seconds: 1));
       onPressedButtonSendRequest();
-      // Navigate to AcceptPayment page after 2 seconds
-      // await Future.delayed(const Duration(seconds: 2));
-      // // Navigator.pushNamed(context,DeclinePayment());
-      // Navigator.pop(context);
-      // Navigator.of(context).push(
-      //   MaterialPageRoute(
-      //     builder: (context) => DeclinePayment(),
-      //   ),
-      // );
     }
     else {
       // Show snackbar with error message for 2 seconds
@@ -353,8 +384,6 @@ class _payreques2ttState extends State<payrequest2> {
           duration: Duration(seconds: 2),
         ),
       );
-      // await Future.delayed(const Duration(seconds: 1));
-      // onPressedButtonSendRequest();
     }
   }
 
@@ -456,173 +485,167 @@ class _payreques2ttState extends State<payrequest2> {
             Text('Service Charge:               $maintenanceChargeString.0\$(AUD)', style: TextStyle(fontSize: 12),),
             SizedBox(height: 2),
             Text('---------------------------------', style: TextStyle(fontSize: 16),),
-
-            // if (_booking.value.coupon == 'null')
-            //   Text('Total:                                       ${totalAmount}\$(AUD)', style: TextStyle(fontSize: 12)),
-            // if (_booking.value.coupon != 'null')
-            //   Text('Sub Total:                              ${totalAmount}\$(AUD)', style: TextStyle(fontSize: 12)),
             Text('Coupon:                               -${coupontAmount}\$(AUD)', style: TextStyle(fontSize: 12)),
             Text('---------------------------------', style: TextStyle(fontSize: 16),),
             Text('Total:                                        ${totalAmount - coupontAmount}\$(AUD)', style: TextStyle(fontSize: 12)),
 
-            SizedBox(height: 20,),
-            // Card Details
-            SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      selectedOption = "NEW CARD";
-                    });
-                  },
-                  child: Text('NEW CARD'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    // fetchCardList();
-                    setState(() {
-                      selectedOption = "Select Card";
-                    });
-                  },
-                  child: Text('Select Card'),
-                ),
-              ],
-            ),
-            SizedBox(height: 16),
-
-            // Display UI based on the selected option
-            if (selectedOption == 'NEW CARD')
-              Column(
-                children: [
-                  Center(child: Text("Card Details", style: TextStyle(fontSize: 20))),
-                  SizedBox(height: 8),
-                  TextFormField(
-                    controller: textField1ControllerCardNumber,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly, // Allow only digits
-                      CardNumberFormatter(), // Apply card number formatting
-                      LengthLimitingTextInputFormatter(19), // Limit to 19 characters (max for credit cards)
-                    ],
-                    decoration: InputDecoration(
-                      labelText: 'Card Number',
-                      hintText: 'XXXX XXXX XXXX XXXX',
-                      border: OutlineInputBorder(),
-                    ),
-                    maxLength: 19,
-                    onChanged: (value) {}, // Handle input changes as needed
-                  ),
-
-                  TextFormField(
-                    controller: textField1ControllerName,
-                    decoration: InputDecoration(
-                      labelText: 'Card Holder Name',
-                      border: OutlineInputBorder(),
-                    ),
-                    onChanged: (value) {}, // Handle input changes as needed
-                  ),
-
-                  SizedBox(height: 20),
-                  Center(child: Text('Expiry Dates', style: TextStyle(fontSize: 12))),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-
-                      DropdownButton<String>(
-                        value: selectedMonth,
-                        onChanged: (String newValue) {
-                          setState(() {
-                            selectedMonth = newValue;
-                          });
-                        },
-                        items: months.map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: getMonthValue(value),
-                            child: Text(value),
-                          );
-                        }).toList(),
-                      ),
-
-
-                      SizedBox(height: 16),
-                      DropdownButton<String>(
-                        value: selectedYear,
-                        onChanged: (String newValue) {
-                          setState(() {
-                            // Extract the last two characters as the new value
-                            selectedYear = newValue;
-                          });
-                        },
-                        items: _years.map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                      ),
-
-                    ],
-                  ),
-                  SizedBox(height: 10),
-                  TextFormField(
-                    controller: textField1ControllerCCV,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly, // Allow only digits
-                    ],
-                    decoration: InputDecoration(
-                      labelText: 'CCV',
-                      border: OutlineInputBorder(),
-                    ),
-                    onChanged: (value) {}, // Handle input changes as needed
-                  ),
-                ],
-              ),
-            if(selectedOption == "Select Card")
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: cards2.map((card) {
-                    String last4Digits = card["cardNumber"].substring(card["cardNumber"].length - 4);
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            isCardSelected = true;
-                            cardId = card["id"].toString();
-                          });
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Your Card is selected. You can Pay now'),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          padding: EdgeInsets.all(8.0),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: isCardSelected ? Colors.orange : Colors.blue), // Change color to orange if card is selected
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          child: Text('****${last4Digits}'), // Display asterisks (*) before the last 4 digits
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ),
             SizedBox(height: 20),
-            // Pay Button
-            // if (selectedOption == 'NEW CARD' || selectedOption == 'Select Card')
-            SizedBox(height: 16),
-            // Center(
-            //   child: ElevatedButton(
-            //     onPressed: onPressedButton,
-            //     child: Text("PAY Now"),
-            //   ),
+            Center(
+              child: ElevatedButton(
+                onPressed: initiateSSLCommerzPaymentFlow, // Call the new initiation method
+                child: Text("Proceed to Payment"),
+              ),
+            ),
+
+            // SizedBox(height: 20,),
+            // // Card Details
+            // SizedBox(height: 30),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            //   children: [
+            //     ElevatedButton(
+            //       onPressed: () {
+            //         setState(() {
+            //           selectedOption = "NEW CARD";
+            //         });
+            //       },
+            //       child: Text('NEW CARD'),
+            //     ),
+            //     ElevatedButton(
+            //       onPressed: () {
+            //         // fetchCardList();
+            //         setState(() {
+            //           selectedOption = "Select Card";
+            //         });
+            //       },
+            //       child: Text('Select Card'),
+            //     ),
+            //   ],
             // ),
+            // SizedBox(height: 16),
+            //
+            // // Display UI based on the selected option
+            // if (selectedOption == 'NEW CARD')
+            //   Column(
+            //     children: [
+            //       Center(child: Text("Card Details", style: TextStyle(fontSize: 20))),
+            //       SizedBox(height: 8),
+            //       TextFormField(
+            //         controller: textField1ControllerCardNumber,
+            //         keyboardType: TextInputType.number,
+            //         inputFormatters: [
+            //           FilteringTextInputFormatter.digitsOnly, // Allow only digits
+            //           CardNumberFormatter(), // Apply card number formatting
+            //           LengthLimitingTextInputFormatter(19), // Limit to 19 characters (max for credit cards)
+            //         ],
+            //         decoration: InputDecoration(
+            //           labelText: 'Card Number',
+            //           hintText: 'XXXX XXXX XXXX XXXX',
+            //           border: OutlineInputBorder(),
+            //         ),
+            //         maxLength: 19,
+            //         onChanged: (value) {}, // Handle input changes as needed
+            //       ),
+            //
+            //       TextFormField(
+            //         controller: textField1ControllerName,
+            //         decoration: InputDecoration(
+            //           labelText: 'Card Holder Name',
+            //           border: OutlineInputBorder(),
+            //         ),
+            //         onChanged: (value) {}, // Handle input changes as needed
+            //       ),
+            //
+            //       SizedBox(height: 20),
+            //       Center(child: Text('Expiry Dates', style: TextStyle(fontSize: 12))),
+            //       Row(
+            //         mainAxisAlignment: MainAxisAlignment.spaceAround,
+            //         children: [
+            //
+            //           DropdownButton<String>(
+            //             value: selectedMonth,
+            //             onChanged: (String newValue) {
+            //               setState(() {
+            //                 selectedMonth = newValue;
+            //               });
+            //             },
+            //             items: months.map<DropdownMenuItem<String>>((String value) {
+            //               return DropdownMenuItem<String>(
+            //                 value: getMonthValue(value),
+            //                 child: Text(value),
+            //               );
+            //             }).toList(),
+            //           ),
+            //
+            //
+            //           SizedBox(height: 16),
+            //           DropdownButton<String>(
+            //             value: selectedYear,
+            //             onChanged: (String newValue) {
+            //               setState(() {
+            //                 // Extract the last two characters as the new value
+            //                 selectedYear = newValue;
+            //               });
+            //             },
+            //             items: _years.map<DropdownMenuItem<String>>((String value) {
+            //               return DropdownMenuItem<String>(
+            //                 value: value,
+            //                 child: Text(value),
+            //               );
+            //             }).toList(),
+            //           ),
+            //
+            //         ],
+            //       ),
+            //       SizedBox(height: 10),
+            //       TextFormField(
+            //         controller: textField1ControllerCCV,
+            //         keyboardType: TextInputType.number,
+            //         inputFormatters: [
+            //           FilteringTextInputFormatter.digitsOnly, // Allow only digits
+            //         ],
+            //         decoration: InputDecoration(
+            //           labelText: 'CCV',
+            //           border: OutlineInputBorder(),
+            //         ),
+            //         onChanged: (value) {}, // Handle input changes as needed
+            //       ),
+            //     ],
+            //   ),
+            // if(selectedOption == "Select Card")
+            //   SingleChildScrollView(
+            //     scrollDirection: Axis.horizontal,
+            //     child: Row(
+            //       children: cards2.map((card) {
+            //         String last4Digits = card["cardNumber"].substring(card["cardNumber"].length - 4);
+            //         return Padding(
+            //           padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            //           child: GestureDetector(
+            //             onTap: () {
+            //               setState(() {
+            //                 isCardSelected = true;
+            //                 cardId = card["id"].toString();
+            //               });
+            //               ScaffoldMessenger.of(context).showSnackBar(
+            //                 SnackBar(
+            //                   content: Text('Your Card is selected. You can Pay now'),
+            //                 ),
+            //               );
+            //             },
+            //             child: Container(
+            //               padding: EdgeInsets.all(8.0),
+            //               decoration: BoxDecoration(
+            //                 border: Border.all(color: isCardSelected ? Colors.orange : Colors.blue), // Change color to orange if card is selected
+            //                 borderRadius: BorderRadius.circular(8.0),
+            //               ),
+            //               child: Text('****${last4Digits}'), // Display asterisks (*) before the last 4 digits
+            //             ),
+            //           ),
+            //         );
+            //       }).toList(),
+            //     ),
+            //   ),
+            SizedBox(height: 16),
             SizedBox(height: 10),
             if (selectedOption == 'NEW CARD')
               Row(
@@ -677,62 +700,6 @@ class _payreques2ttState extends State<payrequest2> {
                   ),
                 ],
               ),
-              // SizedBox(height: 10,),
-              // Column(
-              //   children: [
-              //     SizedBox(width: 80),
-              //     Center(
-              //       child: ElevatedButton(
-              //         onPressed: onPressedButtonSendRequest,
-              //         child: Text("Send New Requst"),
-              //       ),
-              //     ),
-              //     SizedBox(width: 30,),
-              //   ],
-              // ),
-              // Center(
-              //   child: controller.isSubmitOrderLoading.value == true
-              //       ? CircularProgressIndicator()
-              //
-              //       :InkWell(
-              //     onTap: () {
-              //       if (Get.find<SettingsService>()
-              //           .address
-              //           .value
-              //           .isUnknown()) {
-              //         Get.showSnackbar(Ui.ErrorSnackBar(
-              //             message: "Please set your location"));
-              //       }
-              //       else {
-              //         if (selectedOrderRequestType !=
-              //             "Choose Provider Manually") {
-              //           controller.submitBookingRequest(
-              //               _addToCartController.addToCartData);
-              //         }
-              //         if (selectedOrderRequestType ==
-              //             "Choose Provider Manually" &&
-              //             controller.providersData.length > 0) {
-              //           // controller.validateManualBookingRequest(
-              //           //     _addToCartController.addToCartData);
-              //         }
-              //       }
-              //     },
-              //     child: Container(
-              //       padding: EdgeInsets.only(
-              //           left: 20, right: 20, top: 10, bottom: 10),
-              //       decoration: BoxDecoration(
-              //         color: Get.theme.colorScheme.secondary,
-              //         borderRadius: BorderRadius.all(Radius.circular(20)),
-              //       ),
-              //       child: Text("Send Request",
-              //           style: (TextStyle(
-              //               fontSize: 14,
-              //               fontWeight: FontWeight.bold,
-              //               color: Colors.white))),
-              //     ),
-              //   ),
-              // )
-
           ],
         ),
       ),

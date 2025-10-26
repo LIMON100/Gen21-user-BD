@@ -17,17 +17,17 @@ String get _googleMapsApiKey {
 }
 
 void showPlacePicker() async {
-  // LocationResult _address = await Navigator.of(Get.context).push(
-  //   MaterialPageRoute(
-  //     builder: (context) => PlacePicker(Get.find<SettingsService>().setting.value.googleMapsKey, defaultLocation: LatLng(	-33.865143, 151.209900),),
-  //   ),
-  // );
-
   LocationResult _address = await Navigator.of(Get.context).push(
     MaterialPageRoute(
-      builder: (context) => PlacePicker(_googleMapsApiKey, defaultLocation: LatLng(	-33.865143, 151.209900),),
+      builder: (context) => PlacePicker(Get.find<SettingsService>().setting.value.googleMapsKey, defaultLocation: LatLng(	-33.865143, 151.209900),),
     ),
   );
+
+  // LocationResult _address = await Navigator.of(Get.context).push(
+  //   MaterialPageRoute(
+  //     builder: (context) => PlacePicker(_googleMapsApiKey, defaultLocation: LatLng(	-33.865143, 151.209900),),
+  //   ),
+  // );
 
   // Handle the result in your way
   print("kfsjnfjksnan ${_address.toString()} lat:${_address.formattedAddress}");

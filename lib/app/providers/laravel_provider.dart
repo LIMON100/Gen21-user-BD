@@ -307,6 +307,7 @@ class LaravelApiClient extends GetxService with ApiClient {
     var _queryParameters = {
       "api_token": authService.apiToken,
       "order_id": bookingId,
+      'version': '2'
     };
     Uri _uri = getApiBaseUri("send-request").replace(queryParameters: _queryParameters);
 

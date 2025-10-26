@@ -38,6 +38,8 @@ import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart' as dio;
 import 'package:dio/dio.dart';
 
+import 'ssl_payment.dart';
+
 class RequestView extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -362,12 +364,6 @@ class RequestViewState extends State<RequestView> {
                           } else {
                             print(
                                 "sdnfjsfsdan  Get.find<SettingsService>().address: ${controller.currentAddress?.value?.address}");
-                            // if (controller.currentAddress?.address == null) {
-                            //   final _address = controller.addresses.elementAt(0);
-                            //   Get.find<SettingsService>().address.value = _address;
-                            //   print(
-                            //       "sdnfjsfsdan  Get.find<SettingsService>().address.value: ${Get.find<SettingsService>().address.value}");
-                            // }
                             return TabBarWidget(
                               initialSelectedId: "0",
                               tag: 'addresses',
@@ -431,8 +427,6 @@ class RequestViewState extends State<RequestView> {
                               },
                               items: orderTimeType),
                         ),
-                        // Text("LIMON"),
-                        // Text(controller.noteEditingController.text),
                         Obx(() {
                           DateTime bookingAt = controller.bookingAt.value;
                           return selectedOrderTimeType == "Schedule An Order"
@@ -642,7 +636,6 @@ class RequestViewState extends State<RequestView> {
                InkWell(
                   onTap: () {
                     if (serviceNames.length > 1) {
-                      // Show snackbar if more than one item is selected
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
@@ -657,8 +650,9 @@ class RequestViewState extends State<RequestView> {
                         Get.showSnackbar(Ui.ErrorSnackBar(
                           message: "Please set your location",
                         ));
-                      } else {
-                        Get.to(() => payrequest2(
+                      }
+                      else {
+                        Get.to(() => sslpayment(
                             bookingId: bookingId,
                             orderId: orderId,
                             name: name,
@@ -671,6 +665,20 @@ class RequestViewState extends State<RequestView> {
                             service_info: serviceNamesString
                         ));
                       }
+                      // else {
+                      //   Get.to(() => sslpayment(
+                      //       bookingId: bookingId,
+                      //       orderId: orderId,
+                      //       name: name,
+                      //       address: Get.find<SettingsService>().address.value.address.toString(),
+                      //       phoneNumber: phoneNumber,
+                      //       email: email,
+                      //       amount: _addToCartController.totalAmount(),
+                      //       totalPayableAmount: 5.0,
+                      //       serviceAmount: '5',
+                      //       service_info: serviceNamesString
+                      //   ));
+                      // }
                     }
                   },
                   child: Container(

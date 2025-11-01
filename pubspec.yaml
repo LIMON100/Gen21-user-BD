@@ -25,7 +25,7 @@ dependencies:
   change_app_package_name: ^1.0.0
   # GET
   get: 4.6.1
-  get_storage: 2.0.3
+  get_storage: 2.1.1
   # DIO
   dio: 4.0.4
   dio_http_cache: 0.3.0
@@ -43,6 +43,8 @@ dependencies:
   shimmer: 2.0.0
   # WEB
   webview_flutter: 2.8.0
+#  flutter_sslcommerz:
+  fluttertoast:
 #  flutter_html: 2.2.1
   flutter_html: 2.1.3
 #  flutter_html_view: any

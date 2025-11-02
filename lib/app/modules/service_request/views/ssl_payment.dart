@@ -120,8 +120,8 @@ class _sslpaymentState extends State<sslpayment> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          // builder: (context) => WebViewScreen(url: gatewayUrl, bookingId: widget.bookingId, orderId: widget.orderId),
-          builder: (context) => WebViewScreen(url: gatewayUrl, bookingId: widget.bookingId),
+          builder: (context) => WebViewScreen(url: gatewayUrl, bookingId: widget.bookingId, orderId: widget.orderId),
+          // builder: (context) => WebViewScreen(url: gatewayUrl, bookingId: widget.bookingId),
         ),
       );
 
@@ -480,14 +480,14 @@ class _sslpaymentState extends State<sslpayment> {
             Center(child: Text("Total Payable Amount", style: TextStyle(fontSize: 20))),
 
             SizedBox(height: 12),
-            Text('Service Amount:             ${widget.amount}\$(AUD)', style: TextStyle(fontSize: 12),),
+            Text('Service Amount:             ${widget.amount}\৳(BDT)', style: TextStyle(fontSize: 12),),
             SizedBox(height: 2),
-            Text('Service Charge:               $maintenanceChargeString.0\$(AUD)', style: TextStyle(fontSize: 12),),
+            Text('Service Charge:               $maintenanceChargeString.0\৳(BDT)', style: TextStyle(fontSize: 12),),
             SizedBox(height: 2),
             Text('---------------------------------', style: TextStyle(fontSize: 16),),
-            Text('Coupon:                               -${coupontAmount}\$(AUD)', style: TextStyle(fontSize: 12)),
+            Text('Coupon:                               -${coupontAmount}\৳(BDT)', style: TextStyle(fontSize: 12)),
             Text('---------------------------------', style: TextStyle(fontSize: 16),),
-            Text('Total:                                        ${totalAmount - coupontAmount}\$(AUD)', style: TextStyle(fontSize: 12)),
+            Text('Total:                                        ${totalAmount - coupontAmount}\৳(BDT)', style: TextStyle(fontSize: 12)),
 
             SizedBox(height: 20),
             Center(

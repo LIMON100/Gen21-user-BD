@@ -323,7 +323,6 @@ class _payreques2ttState extends State<payrequest2> {
 
     Navigator.pop(context);
 
-
     // UPDATE PAYMENT SCREEN
     if (responseFromPayment) {
       // Show loading indicator for 2 seconds
@@ -451,19 +450,15 @@ class _payreques2ttState extends State<payrequest2> {
             Center(child: Text("Total Payable Amount", style: TextStyle(fontSize: 20))),
 
             SizedBox(height: 12),
-            Text('Service Amount:             ${widget.amount}\$(AUD)', style: TextStyle(fontSize: 12),),
+            Text('Service Amount:             ${widget.amount}\৳(AUD)', style: TextStyle(fontSize: 12),),
             SizedBox(height: 2),
-            Text('Service Charge:               $maintenanceChargeString.0\$(AUD)', style: TextStyle(fontSize: 12),),
+            Text('Service Charge:               $maintenanceChargeString.0\৳(AUD)', style: TextStyle(fontSize: 12),),
             SizedBox(height: 2),
             Text('---------------------------------', style: TextStyle(fontSize: 16),),
 
-            // if (_booking.value.coupon == 'null')
-            //   Text('Total:                                       ${totalAmount}\$(AUD)', style: TextStyle(fontSize: 12)),
-            // if (_booking.value.coupon != 'null')
-            //   Text('Sub Total:                              ${totalAmount}\$(AUD)', style: TextStyle(fontSize: 12)),
-            Text('Coupon:                               -${coupontAmount}\$(AUD)', style: TextStyle(fontSize: 12)),
+            Text('Coupon:                               -${coupontAmount}\৳(AUD)', style: TextStyle(fontSize: 12)),
             Text('---------------------------------', style: TextStyle(fontSize: 16),),
-            Text('Total:                                        ${totalAmount - coupontAmount}\$(AUD)', style: TextStyle(fontSize: 12)),
+            Text('Total:                                        ${totalAmount - coupontAmount}\৳(AUD)', style: TextStyle(fontSize: 12)),
 
             SizedBox(height: 20,),
             // Card Details

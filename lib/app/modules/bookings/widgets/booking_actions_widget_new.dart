@@ -129,7 +129,7 @@ class BookingActionsWidgetNew extends GetView<BookingControllerNew> {
                       }),
                 ),
               ),
-            if (_booking.value.booking_status_id != "7" && _booking.value.status.order >= Get.find<GlobalService>().global.value.done && _booking.value.payment != null)
+            if (_booking.value.booking_status_id != "7" && _booking.value.status.order >= Get.find<GlobalService>().global.value.done)
               Expanded(
                 child: Container(
                   margin: EdgeInsets.only(right: 5),
@@ -161,52 +161,54 @@ class BookingActionsWidgetNew extends GetView<BookingControllerNew> {
                       }),
                 ),
               ),
-            if (_booking.value.booking_status_id != "7" && controller.booking.value.payment?.paymentStatus?.status != "Paid")
-              controller.initiatingEway.value
-                  ? Expanded(child: Container( width: 30, height: 30, child: Center(child: CircularProgressIndicator())))
-                  :
-              Expanded(
-                      child: Container(
-                        margin: EdgeInsets.only(right: 5),
-                        child: BlockButtonWidget(
-                            text: Stack(
-                              alignment: AlignmentDirectional.centerEnd,
-                              children: [
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: Text(
-                                    "Pay Now".tr,
-                                    textAlign: TextAlign.center,
-                                    style: Get.textTheme.headline6.merge(
-                                      TextStyle(color: Get.theme.primaryColor),
-                                    ),
-                                  ),
-                                ),
-                                Icon(Icons.attach_money_outlined, color: Get.theme.primaryColor, size: 22)
-                              ],
-                            ),
-                            color: Get.theme.colorScheme.secondary,
-                            onPressed: () {
-                              if(_booking.value.total_payable_amount > 0) {
-                                Navigator.pop(context);
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => ServicePayment(id: _booking.value.id, name: _booking.value.user.name, email: _booking.value.user.email,
-                                        address: _booking.value.address.address, mobile: _booking.value.user.phoneNumber, coupon: _booking.value.coupon.toString(),
-                                        amount: _booking.value.total_amount.toString(), paybleAmount: _booking.value.total_payable_amount.toString(),
-                                        serviceInfo: _booking.value.eService.name),
-                                  ),
-                                  // MaterialPageRoute(
-                                  //   builder: (context) => ServicePayment2(id: _booking.value.id),
-                                  // ),
-                                );
-                                // controller.initiateEway(_booking.value);
-                              }else{
-                                Get.showSnackbar(Ui.ErrorSnackBar(message: "Total payable amount can't be 0!".tr));
-                              }
-                            }),
-                      ),
-                    ),
+            // if (_booking.value.booking_status_id != "7" && controller.booking.value.payment?.paymentStatus?.status != "Paid")
+            //   controller.initiatingEway.value
+            //       ? Expanded(child: Container( width: 30, height: 30, child: Center(child: CircularProgressIndicator())))
+            //       :
+            //   Expanded(
+            //           child: Container(
+            //             margin: EdgeInsets.only(right: 5),
+            //             child: BlockButtonWidget(
+            //                 text: Stack(
+            //                   alignment: AlignmentDirectional.centerEnd,
+            //                   children: [
+            //                     SizedBox(
+            //                       width: double.infinity,
+            //                       child: Text(
+            //                         "Pay Now".tr,
+            //                         textAlign: TextAlign.center,
+            //                         style: Get.textTheme.headline6.merge(
+            //                           TextStyle(color: Get.theme.primaryColor),
+            //                         ),
+            //                       ),
+            //                     ),
+            //                     Icon(Icons.attach_money_outlined, color: Get.theme.primaryColor, size: 22)
+            //                   ],
+            //                 ),
+            //                 color: Get.theme.colorScheme.secondary,
+            //                 onPressed: () {
+            //                   if(_booking.value.total_payable_amount > 0) {
+            //                     Navigator.pop(context);
+            //                     Navigator.of(context).push(
+            //                       MaterialPageRoute(
+            //                         builder: (context) => ServicePayment(id: _booking.value.id, name: _booking.value.user.name, email: _booking.value.user.email,
+            //                             address: _booking.value.address.address, mobile: _booking.value.user.phoneNumber, coupon: _booking.value.coupon.toString(),
+            //                             amount: _booking.value.total_amount.toString(), paybleAmount: _booking.value.total_payable_amount.toString(),
+            //                             serviceInfo: _booking.value.eService.name),
+            //                       ),
+            //                       // MaterialPageRoute(
+            //                       //   builder: (context) => ServicePayment2(id: _booking.value.id),
+            //                       // ),
+            //                     );
+            //                     // controller.initiateEway(_booking.value);
+            //                   }else{
+            //                     Get.showSnackbar(Ui.ErrorSnackBar(message: "Total payable amount can't be 0!".tr));
+            //                   }
+            //                 }),
+            //           ),
+            //         ),
+
+
             // SizedBox(width: 10),// Stop the cancel option
             // if (_booking.value.booking_status_id != "7" && _booking.value.status.order < Get.find<GlobalService>().global.value.onTheWay)
             // // if (_booking.value.booking_status_id != "7")

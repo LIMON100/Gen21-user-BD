@@ -378,7 +378,8 @@ import '../../new_payment_ui/after_payment/DeclinePayment.dart';
 class WebViewScreen extends StatefulWidget {
   final String url;
   final int bookingId;
-  const WebViewScreen({Key key, @required this.url, @required this.bookingId}) : super(key: key);
+  final int orderId;
+  const WebViewScreen({Key key, @required this.url, @required this.bookingId, this.orderId}) : super(key: key);
 
   @override
   _WebViewScreenState createState() => _WebViewScreenState();
@@ -433,26 +434,31 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
         if (status == 'completed') {
           print("Payment confirmed COMPLETED from API. Triggering partner request.");
-          // await _laravelApiClient.sendRequestAfterPayment(bookingId);
           Get.showSnackbar(Ui.SuccessSnackBar(message: 'Payment successful!'));
+          await _laravelApiClient.sendRequestAfterPayment(widget.orderId.toString());
+          Get.showSnackbar(Ui.SuccessSnackBar(message: 'Request successfully Send.'));
           Get.find<RootController>().changePage(1);
-        } else {
+        }
+        else {
           print("Payment status from API is not completed: $status");
           Get.showSnackbar(Ui.ErrorSnackBar(message: 'Payment ${status ?? 'unknown'}. Please check your order or contact support.'));
           // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DeclinePayment()));
         }
-      } else {
+      }
+      else {
         print("API call to getSSLCommerzStatus failed or returned success: false.");
         Get.showSnackbar(Ui.ErrorSnackBar(message: 'Failed to verify payment status.'));
         Navigator.pop(context); // Close WebView if API failed
         // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DeclinePayment()));
       }
-    } catch (e) {
+    }
+    catch (e) {
       print("Exception in verifyPaymentStatus: $e");
       Get.showSnackbar(Ui.ErrorSnackBar(message: 'An error occurred during verification.'));
       Navigator.pop(context); // Close WebView on error
       // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DeclinePayment()));
-    } finally {
+    }
+    finally {
       if (mounted) {
         setState(() {
           _isLoadingStatus = false;
@@ -465,7 +471,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Complete Payment"),
+        title: Text(""),
         centerTitle: true,
         automaticallyImplyLeading: false,
       ),

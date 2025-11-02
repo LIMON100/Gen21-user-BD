@@ -3,7 +3,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
-// import 'package:flutter_stetho/flutter_stetho.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
@@ -89,6 +88,8 @@ void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
 
+  // await GetStorage.init();
+
   bool isInternetConnected = await InternetConnectionChecker().hasConnection;
   print("fklkaslkld $isInternetConnected");
 
@@ -100,20 +101,8 @@ void main() async {
 
   } else {
     print("fklkaslkld 2");
-    // await Get.putAsync(() => SettingsService().init());
-
-    // Get.toNamed(Routes.NO_INTERNET);
-    // Navigator.push(context, Routes.NO_INTERNET))
   }
-  // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-
-  // Future<bool> checkBaseUrl() async {
-  //   bool data = await splashRepo.checkBaseUrl();
-  //   print("sdnjfnja bool in splash provider $data");
-  //   return data;
-  // }
-  // Stetho.initialize();
   Get.put(RequestController());
   runApp(
     isInternetConnected
@@ -140,56 +129,8 @@ void main() async {
             title: "No Internet Connection",
             initialRoute: Theme1AppPages.NO_INTERNET,
             getPages: Theme1AppPages.routes,
-            // localizationsDelegates: [GlobalMaterialLocalizations.delegate],
-            // supportedLocales: Get.find<TranslationService>().supportedLocales(),
-            // translationsKeys: Get.find<TranslationService>().translations,
-            // locale: Get.find<SettingsService>().getLocale(),
-            // fallbackLocale: Get.find<TranslationService>().fallbackLocale,
             debugShowCheckedModeBanner: false,
             defaultTransition: Transition.cupertino,
-            // themeMode: Get.find<SettingsService>().getThemeMode(),
-            // theme: Get.find<SettingsService>().getLightTheme(),
-            // darkTheme: Get.find<SettingsService>().getDarkTheme(),
           ),
   );
-  // final prefs = await SharedPreferences.getInstance();
-  // final hasSeenOnboarding = prefs.getBool('hasSeenOnboarding') ?? false;
-  //
-  // runApp(
-  //   isInternetConnected
-  //       ? GetMaterialApp(
-  //     title: Get.find<SettingsService>().setting.value.appName,
-  //     initialRoute: hasSeenOnboarding ? Theme1AppPages.INITIAL : Routes.ONBOARDING,
-  //     onReady: () async {
-  //       print("fklkaslkld 3");
-  //       await Get.putAsync(() => FireBaseMessagingService().init());
-  //     },
-  //     getPages: Theme1AppPages.routes,
-  //     localizationsDelegates: [GlobalMaterialLocalizations.delegate],
-  //     supportedLocales: Get.find<TranslationService>().supportedLocales(),
-  //     translationsKeys: Get.find<TranslationService>().translations,
-  //     locale: Get.find<SettingsService>().getLocale(),
-  //     fallbackLocale: Get.find<TranslationService>().fallbackLocale,
-  //     debugShowCheckedModeBanner: false,
-  //     defaultTransition: Transition.cupertino,
-  //     themeMode: Get.find<SettingsService>().getThemeMode(),
-  //     theme: Get.find<SettingsService>().getLightTheme(),
-  //     darkTheme: Get.find<SettingsService>().getDarkTheme(),
-  //   )
-  //       : GetMaterialApp(
-  //     title: "No Internet Connection",
-  //     initialRoute: Theme1AppPages.NO_INTERNET,
-  //     getPages: Theme1AppPages.routes,
-  //     // localizationsDelegates: [GlobalMaterialLocalizations.delegate],
-  //     // supportedLocales: Get.find<TranslationService>().supportedLocales(),
-  //     // translationsKeys: Get.find<TranslationService>().translations,
-  //     // locale: Get.find<SettingsService>().getLocale(),
-  //     // fallbackLocale: Get.find<TranslationService>().fallbackLocale,
-  //     debugShowCheckedModeBanner: false,
-  //     defaultTransition: Transition.cupertino,
-  //     // themeMode: Get.find<SettingsService>().getThemeMode(),
-  //     // theme: Get.find<SettingsService>().getLightTheme(),
-  //     // darkTheme: Get.find<SettingsService>().getDarkTheme(),
-  //   ),
-  // );
 }

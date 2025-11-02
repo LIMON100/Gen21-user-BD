@@ -1973,13 +1973,44 @@ class LaravelApiClient extends GetxService with ApiClient {
     }
   }
 
+  // Future<Setting> getSettings() async {
+  //   Uri _uri = getApiBaseUri("settings");
+  //   Get.log(_uri.toString());
+  //   print("seeting api call: $_uri");
+  //
+  //   var response = await _httpClient.getUri(_uri, options: _optionsNetwork);
+  //   printWrapped("kdsjknfsdjk response: ${response.toString()}");
+  //   if (response.data['success'] == true) {
+  //     return Setting.fromJson(response.data['data']);
+  //   } else {
+  //     print("kdsjknfsdjk exception happen in getSettings()");
+  //     throw new Exception(response.data['message']);
+  //   }
+  // }
+
   Future<Setting> getSettings() async {
+    // 1. Get the base URI
     Uri _uri = getApiBaseUri("settings");
     Get.log(_uri.toString());
-    print("seeting api call");
+    print("seeting api call: $_uri");
+
+    // 2. Prepare the query parameters
+    // Start with any existing query parameters from the base URI (though 'settings' usually doesn't have any initially)
+    // Then add your new parameter.
+    var _queryParameters = {
+      // You can include existing parameters here if any, for example:
+      // ...Uri.splitQueryString(_uri.query), // This splits existing query params, if any
+      'version': '2', // Add your new parameter here
+    };
+
+    // 3. Replace the query parameters of the existing Uri
+    _uri = _uri.replace(queryParameters: _queryParameters);
+
+    // Now _uri will have ?version=2 appended (or merged with existing params)
+    print("Updated settings API call: $_uri");
 
     var response = await _httpClient.getUri(_uri, options: _optionsNetwork);
-    // printWrapped("kdsjknfsdjk response: ${response.toString()}");
+    printWrapped("kdsjknfsdjk response: ${response.toString()}");
     if (response.data['success'] == true) {
       return Setting.fromJson(response.data['data']);
     } else {
@@ -1987,7 +2018,6 @@ class LaravelApiClient extends GetxService with ApiClient {
       throw new Exception(response.data['message']);
     }
   }
-
   Future<List<CustomPage>> getCustomPages() async {
     var _queryParameters = {
       'only': 'id;title',

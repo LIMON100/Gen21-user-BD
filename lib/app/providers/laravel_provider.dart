@@ -674,6 +674,65 @@ class LaravelApiClient extends GetxService with ApiClient {
     }
   }
 
+
+  Future<bool> sendBookingOtpConfirmation(String bookingId) async {
+    print("LaravelApiClient: Sending OTP for bookingId: $bookingId");
+    var _queryParameters = {
+      "api_token": authService.apiToken,
+      "booking_id": bookingId,
+      'version': '2',
+    };
+    Uri _uri = getApiBaseUri("send-booking-otp").replace(queryParameters: _queryParameters);
+
+    print("sendBookingOtpConfirmation URL: ${_uri.toString()}");
+
+    try {
+      var response = await _httpClient.postUri(_uri, options: _optionsNetwork); // POST request
+      print("sendBookingOtpConfirmation response: Status Code = ${response.statusCode}, Data = ${response.data}");
+
+      if (response.statusCode == 200 && response.data != null && response.data['success'] == true) {
+        print("OTP sent successfully.");
+        return true;
+      } else {
+        print("OTP sending failed: Status code ${response.statusCode}, Response: ${response.data}");
+        throw Exception(response.data['message'] ?? 'Failed to send OTP.');
+      }
+    } catch (e) {
+      print("Exception in sendBookingOtpConfirmation: $e");
+      throw Exception('An error occurred while sending OTP.');
+    }
+  }
+
+  Future<Booking> verifyBookingOtpAndUpdate(Booking booking, String otp) async {
+    if (!authService.isAuth) {
+      throw new Exception("You don't have the permission to access to this area!".tr);
+    }
+
+    // Add the new 'otp_code' query parameter as requested
+    var _queryParameters = {
+      'api_token': authService.apiToken,
+      'booking_id': booking.id,
+      'booking_status_id': booking.status.id,
+      'otp_code': otp, // The OTP from the user input field
+      'version': '2'
+    };
+    Uri _uri = getApiBaseUri("booking-status-update").replace(queryParameters: _queryParameters);
+
+    print("Calling booking-status-update API with OTP: $_uri");
+
+    // This API call uses a POST method, as per your original function.
+    // The original function also sent booking.toJson() as data. We will keep that.
+    var response = await _httpClient.postUri(_uri, data: booking.toJson(), options: _optionsNetwork);
+
+    if (response.data['success'] == true) {
+      print("OTP verification successful, booking updated.");
+      return Booking.fromJson(response.data['data']);
+    } else {
+      print("OTP verification failed: ${response.data['message']}");
+      throw new Exception(response.data['message']); // This will show "OTP not correct" etc.
+    }
+  }
+
   Future<Favorite> addFavoriteEService(Favorite favorite) async {
     if (!authService.isAuth) {
       throw new Exception("You must have an account to be able to add services to favorite".tr + "[ addFavoriteEService() ]");
@@ -1430,9 +1489,6 @@ class LaravelApiClient extends GetxService with ApiClient {
 
       throw new Exception(response.data['message']);
     }
-    // print("jsnfjsansdkll result: ${result.toString()}");
-
-    // return null;
   }
 
   Future<Booking> addBooking(Booking booking) async {

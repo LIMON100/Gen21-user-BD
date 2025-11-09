@@ -231,8 +231,6 @@ class _TipsPaymenttState extends State<TipsPayment> {
   }
 
   Future<void> onPressedButtonSelectCard() async {
-    print("CCCCC");
-    print(cardId);
     if (cardId == '0') {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -244,13 +242,6 @@ class _TipsPaymenttState extends State<TipsPayment> {
       selectedYear = DateTime.now().year.toString();
       return false; // Return false as the request is not made
     }
-    //
-    // ScaffoldMessenger.of(context).showSnackBar(
-    //   const SnackBar(
-    //     content: Text('PAYMENT Ongoing',style: TextStyle(color: Colors.orange),),
-    //     duration: Duration(seconds: 2),
-    //   ),
-    // );
 
     double amountNew = double.parse(widget.amount);
     int amountInt = amountNew.toInt();
@@ -352,30 +343,9 @@ class _TipsPaymenttState extends State<TipsPayment> {
             Text("Email:          ${widget.email}", style: TextStyle(fontSize: 12)),
             SizedBox(height: 2),
             Text("Address:   ${widget.address}", style: TextStyle(fontSize: 12)),
-            // SizedBox(height: 2),
-            // Text("City:             Mymensingh", style: TextStyle(fontSize: 12)),
-            // SizedBox(height: 2),
-            // Text("Country:    Bangladesh", style: TextStyle(fontSize: 12)),
             SizedBox(height: 2),
             Text("Mobile:       ${widget.mobile}", style: TextStyle(fontSize: 12)),
 
-            // Invoice Info
-            // SizedBox(height: 30),
-            // Center(child: Text("Product Invoice Information ", style: TextStyle(fontSize: 20))),
-            // SizedBox(height: 16),
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //   children: [
-            //     Column(
-            //       crossAxisAlignment: CrossAxisAlignment.start,
-            //       children: [
-            //         Text("Invoice Number:         ${widget.id}", style: TextStyle(fontSize: 12)),
-            //         SizedBox(height: 2),
-            //         Text("Invoice Description: ${widget.email}\n${widget.mobile}", style: TextStyle(fontSize: 12)),
-            //       ],
-            //     ),
-            //   ],
-            // ),
 
             // Payable Amount
             SizedBox(height: 30),
@@ -384,18 +354,6 @@ class _TipsPaymenttState extends State<TipsPayment> {
             SizedBox(height: 12),
             Text('Tips Amount:             ${widget.amount}\$ (AUD)', style: TextStyle(fontSize: 12),),
             SizedBox(height: 2),
-            // Text('---------------------------------', style: TextStyle(fontSize: 16),),
-
-            // if (widget.coupon == 'null')
-            //   Text('Total:                                       ${totalAmount}\$(AUD)', style: TextStyle(fontSize: 12)),
-
-
-            // if (widget.coupon != 'null')
-            //   Text('Sub Total:                              ${widget.amount}\$(AUD)', style: TextStyle(fontSize: 12)),
-            //   Text('Coupon:                                 -${couponTest}\$(AUD)', style: TextStyle(fontSize: 12)),
-            //   Text('---------------------------------', style: TextStyle(fontSize: 16),),
-            //   Text('Total:                                         ${totalAmount - couponValue}\$(AUD)', style: TextStyle(fontSize: 12)),
-
 
             // Card Details
             SizedBox(height: 30),
@@ -477,21 +435,6 @@ class _TipsPaymenttState extends State<TipsPayment> {
 
                       SizedBox(height: 16),
 
-                      // Dropdown menu for YEAR
-                      // DropdownButton<String>(
-                      //   value: selectedYear,
-                      //   onChanged: (String newValue) {
-                      //     setState(() {
-                      //       selectedYear = newValue;
-                      //     });
-                      //   },
-                      //   items: _years.map<DropdownMenuItem<String>>((String value) {
-                      //     return DropdownMenuItem<String>(
-                      //       value: value,
-                      //       child: Text(value),
-                      //     );
-                      //   }).toList(),
-                      // ),
                       DropdownButton<String>(
                         value: selectedYear,
                         onChanged: (String newValue) {
@@ -558,98 +501,6 @@ class _TipsPaymenttState extends State<TipsPayment> {
                   }).toList(),
                 ),
               ),
-
-            // PREVIOUS ONE
-            // Center(child: Text("Card Details", style: TextStyle(fontSize: 20))),
-            // SizedBox(height: 8),
-            //
-            // TextFormField(
-            //   controller: textField1ControllerCardNumber,
-            //   keyboardType: TextInputType.number,
-            //   inputFormatters: [
-            //     FilteringTextInputFormatter.digitsOnly, // Allow only digits
-            //     CardNumberFormatter(), // Apply card number formatting
-            //     LengthLimitingTextInputFormatter(19), // Limit to 19 characters (max for credit cards)
-            //   ],
-            //   decoration: InputDecoration(
-            //     labelText: 'Card Number',
-            //     hintText: 'XXXX XXXX XXXX XXXX',
-            //     // prefixIcon: Padding(
-            //     //   padding: const EdgeInsets.all(8.0),
-            //     //   child: Image.network(
-            //     //     'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/800px-Mastercard-logo.svg.png',
-            //     //     height: 30,
-            //     //     width:
-            //     //
-            //     //     30,
-            //     //   ),
-            //     // ),
-            //     border: OutlineInputBorder(),
-            //   ),
-            //   maxLength: 19,
-            //   onChanged: (value) {}, // Handle input changes as needed
-            // ),
-            //
-            // TextFormField(
-            //   controller: textField1ControllerName,
-            //   decoration: InputDecoration(
-            //     labelText: 'Card Holder Name',
-            //     border: OutlineInputBorder(),
-            //   ),
-            //   onChanged: (value) {}, // Handle input changes as needed
-            // ),
-            //
-            // SizedBox(height: 20),
-            // Center(child: Text('Expiry Dates', style: TextStyle(fontSize: 12))),
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.spaceAround,
-            //   children: [
-            //     DropdownButton<String>(
-            //       value: selectedMonth,
-            //       onChanged: (String newValue) {
-            //         setState(() {
-            //           selectedMonth = newValue;
-            //         });
-            //       },
-            //       items: months.map<DropdownMenuItem<String>>((String value) {
-            //         return DropdownMenuItem<String>(
-            //           value: value,
-            //           child: Text(value),
-            //         );
-            //       }).toList(),
-            //     ),
-            //     SizedBox(height: 16),
-            //
-            //     // Dropdown menu for YEAR
-            //     DropdownButton<String>(
-            //       value: selectedYear,
-            //       onChanged: (String newValue) {
-            //         setState(() {
-            //           selectedYear = newValue;
-            //         });
-            //       },
-            //       items: _years.map<DropdownMenuItem<String>>((String value) {
-            //         return DropdownMenuItem<String>(
-            //           value: value,
-            //           child: Text(value),
-            //         );
-            //       }).toList(),
-            //     ),
-            //   ],
-            // ),
-            // SizedBox(height: 10),
-            // TextFormField(
-            //   controller: textField1ControllerCCV,
-            //   keyboardType: TextInputType.number,
-            //   inputFormatters: [
-            //     FilteringTextInputFormatter.digitsOnly, // Allow only digits
-            //   ],
-            //   decoration: InputDecoration(
-            //     labelText: 'CCV',
-            //     border: OutlineInputBorder(),
-            //   ),
-            //   onChanged: (value) {}, // Handle input changes as needed
-            // ),
 
             SizedBox(height: 10),
             if (selectedOption == 'NEW CARD')

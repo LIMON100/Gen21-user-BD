@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -14,11 +15,13 @@ import '../../../models/booking_status_model.dart';
 import '../../../models/message_model.dart';
 import '../../../models/providers_model.dart';
 import '../../../models/user_model.dart';
+import '../../../providers/laravel_provider.dart';
 import '../../../repositories/booking_repository.dart';
 import '../../../repositories/e_provider_repository.dart';
 import '../../../repositories/user_repository.dart';
 import '../../../routes/app_routes.dart';
 import '../../../services/global_service.dart';
+import '../../global_widgets/otp_input_dialog.dart';
 import '../../messages/controllers/messages_controller.dart';
 import '../../tips/tip_controller.dart';
 import '../data/body/e_way_initiate_body.dart';
@@ -41,6 +44,8 @@ class BookingControllerNew extends GetxController {
 
   var loadingStartChat = false.obs;
   var isLoading = false.obs;
+
+  LaravelApiClient _laravelApiClient = Get.find<LaravelApiClient>();
 
   BookingControllerNew() {
     print("jsdnjfnsa constructor()");
@@ -80,21 +85,6 @@ class BookingControllerNew extends GetxController {
     }
   }
 
-  // _startTimer(int seconds){
-  //   const duration = Duration(seconds: 1);
-  //   remainingSeconds = seconds;
-  //   _timer = Timer.periodic(duration, (Timer timer) {
-  //     if(remainingSeconds==0){
-  //       timer.cancel();
-  //     }else{
-  //       int minutes = remainingSeconds~/60;
-  //       int seconds = (remainingSeconds%60);
-  //       time.value = minutes.toString().padLeft(2, "0")+
-  //           ":"+seconds.toString().padLeft(2, "0");
-  //       remainingSeconds--;
-  //     }
-  //   });
-  // }
   _startTimer(int seconds) {
     const duration = Duration(seconds: 1);
     remainingSeconds = seconds;
@@ -143,28 +133,6 @@ class BookingControllerNew extends GetxController {
     // }
   }
 
-  // Future<void> startBookingService() async {
-  //   try {
-  //     final _status = Get.find<BookingsControllerNew>().getStatusByOrder(Get.find<GlobalService>().global.value.inProgress);
-  //     final _booking = new Booking(id: booking.value.id, startAt: DateTime.now(), status: _status);
-  //     await _bookingRepository.updateBookingNew(_booking);
-  //     booking.update((val) {
-  //       val.startAt = _booking.startAt;
-  //       val.status = _status;
-  //     });
-  //     timer = Timer.periodic(Duration(minutes: 1), (t) {
-  //       booking.update((val) {
-  //         val.duration += (1 / 60);
-  //       });
-  //     });
-  //   }
-  //   catch (e) {
-  //     Get.showSnackbar(Ui.ErrorSnackBar(message: "Server not working now"));
-  //   }
-  //   // catch (e) {
-  //   //   Get.showSnackbar(Ui.ErrorSnackBar(message: e.toString()));
-  //   // }
-  // }
   Future<void> startBookingService() async {
     try {
       final _status = Get.find<BookingsControllerNew>().getStatusByOrder(Get.find<GlobalService>().global.value.inProgress);
@@ -195,25 +163,25 @@ class BookingControllerNew extends GetxController {
   }
 
 
-  Future<void> finishBookingService() async {
-    try {
-      final _status = Get.find<BookingsControllerNew>().getStatusByOrder(Get.find<GlobalService>().global.value.done);
-      var _booking = new Booking(id: booking.value.id, endsAt: DateTime.now(), status: _status);
-      print("jsnfjsansdkll booking: ${_booking.toString()}");
-
-      final result = await _bookingRepository.updateBookingNew(_booking);
-      print("jsnfjsansdkll result: ${result.toString()}");
-
-      booking.update((val) {
-        val.endsAt = result.endsAt;
-        val.duration = result.duration;
-        val.status = _status;
-      });
-      timer?.cancel();
-    } catch (e) {
-      Get.showSnackbar(Ui.ErrorSnackBar(message: e.toString()));
-    }
-  }
+  // Future<void> finishBookingService() async {
+  //   try {
+  //     final _status = Get.find<BookingsControllerNew>().getStatusByOrder(Get.find<GlobalService>().global.value.done);
+  //     var _booking = new Booking(id: booking.value.id, endsAt: DateTime.now(), status: _status);
+  //     print("jsnfjsansdkll booking: ${_booking.toString()}");
+  //
+  //     final result = await _bookingRepository.updateBookingNew(_booking);
+  //     print("jsnfjsansdkll result: ${result.toString()}");
+  //
+  //     booking.update((val) {
+  //       val.endsAt = result.endsAt;
+  //       val.duration = result.duration;
+  //       val.status = _status;
+  //     });
+  //     timer?.cancel();
+  //   } catch (e) {
+  //     Get.showSnackbar(Ui.ErrorSnackBar(message: e.toString()));
+  //   }
+  // }
 
   Future<void> cancelBookingService() async {
     try {
@@ -230,26 +198,6 @@ class BookingControllerNew extends GetxController {
       Get.showSnackbar(Ui.ErrorSnackBar(message: e.toString()));
     }
   }
-
-  // Future<void> stopBookingService() async {
-  //   try {
-  //     print("TOOOBOK");
-  //     final _status = Get.find<BookingsControllerNew>().getStatusByOrder(Get.find<GlobalService>().global.value.failed);
-  //     print(_status);
-  //     _status.id = '7';
-  //     _status.status = 'Canceled';
-  //     _status.order = 60;
-  //     final _booking = new Booking(id: booking.value.id, cancel: true, status: _status);
-  //     await _bookingRepository.updateBookingNew(_booking);
-  //     booking.update((val) {
-  //       val.cancel = true;
-  //       val.status = _status;
-  //       val.booking_status_id = "7";
-  //     });
-  //   } catch (e) {
-  //     Get.showSnackbar(Ui.ErrorSnackBar(message: e.toString()));
-  //   }
-  // }
 
   Future<void> cancelBookingServiceNew() async {
     try {
@@ -299,81 +247,6 @@ class BookingControllerNew extends GetxController {
     }
     return hours + separator + minutes;
   }
-
-  // Future<void> startChat() async {
-  //   List<User> _employees = await _eProviderRepository.getEmployees(booking.value.eProvider.id);
-  //   _employees = _employees
-  //       .map((e) {
-  //         e.avatar = booking.value.eProvider.images[0];
-  //         return e;
-  //       })
-  //       .toSet()
-  //       .toList();
-  //   Message _message = new Message(_employees, name: booking.value.eProvider.name);
-  //   Get.toNamed(Routes.CHAT, arguments: _message);
-  // }
-
-  // Future<void> startChat() async {
-  //   List<User> _employees = await _eProviderRepository.getEmployees(booking.value.eProvider.id);
-  //   print("sdkjfnaj startChat() called provider_id: ${booking.value.eProvider.id}");
-  //   _employees = _employees
-  //       .map((e) {
-  //     e.avatar = booking.value.eProvider.images[0];
-  //     return e;
-  //   })
-  //       .toSet()
-  //       .toList();
-  //   Message _message = new Message(_employees, name: booking.value.eProvider.name);
-  //   Get.toNamed(Routes.CHAT, arguments: _message);
-  // }
-
-  // Future<void> startChat() async {
-  //   loadingStartChat.value = true;
-  //   try {
-  //     print("fndjknakjfndjs startChat() called ooking.value.acceptor_provider_id: ${booking.value.acceptor_provider_id}");
-  //
-  //     List<User> _employees;
-  //     _employees.add(Users(id: booking.value.acceptor_provider_id));
-  //
-  //     if(_employees.length> 0 ) {
-  //       Get.find<MessagesController>().getUserAndProviderMessageId(_employees[0].id).then((value) {
-  //         List<Message> messages = value;
-  //         print("sndnfdsnjsd messages: ${messages.toString()}");
-  //         Message _message;
-  //         if (messages.length > 0) {
-  //           print("fndjknakjfndjs 1");
-  //           _message = new Message(_employees, id: messages[0].id, name: booking.value.eProvider.name);
-  //         } else {
-  //           print("fndjknakjfndjs 2");
-  //           _message = new Message(_employees, name: booking.value.eProvider.name);
-  //         }
-  //
-  //         // print("fndjknakjfndjs _message: ${_message.toString()}");
-  //         print("sndnfdsnjsd chats: ${Get
-  //             .find<MessagesController>()
-  //             .chats}");
-  //         Get
-  //             .find<MessagesController>()
-  //             .chats
-  //             .clear();
-  //         print("sndnfdsnjsd chats now: ${Get
-  //             .find<MessagesController>()
-  //             .chats}");
-  //
-  //         print("sndnfdsnjsd _message: ${_message.toString()}");
-  //         // Message _message = new Message(_employees, name: booking.value.eProvider.name);
-  //         Get.toNamed(Routes.CHAT, arguments: _message);
-  //       });
-  //     }else{
-  //       Message _message = new Message(_employees, name: booking.value.eProvider.name);
-  //       Get.toNamed(Routes.CHAT, arguments: _message);
-  //     }
-  //   }catch (e){
-  //     printWrapped("fsnfnafsnfs ${e.toString()}");
-  //     Get.showSnackbar(Ui.ErrorSnackBar(message: "Something went wrong"));
-  //   }
-  //   loadingStartChat.value = false;
-  // }
 
   Future<void> startChat() async {
     loadingStartChat.value = true;
@@ -445,10 +318,6 @@ class BookingControllerNew extends GetxController {
   }
 
   Future<void> initiateEway(BookingNew bookingNew) async {
-    // print("TOTAPP");
-    // final TipController tipController = Get.find();
-    // print(int.parse(tipController.tipText.value));
-    // print(((booking.value.total_payable_amount + 5) + (int.parse(tipController.tipText.value))) * 100);
     try {
       Namefully name;
       if (user.value.name != null && user.value.name.contains(" ")) {
@@ -483,6 +352,109 @@ class BookingControllerNew extends GetxController {
       user.value = await _userRepository.getCurrentUser();
     } catch (e) {
       Get.showSnackbar(Ui.ErrorSnackBar(message: e.toString()));
+    }
+  }
+
+
+
+  // NEW: This is the main function that will be called from the UI
+  // Future<void> promptForOtpAndFinishBooking() async {
+  //   try {
+  //     isLoading.value = true; // Show a loading indicator
+  //     // Step 1: Call API-1 to send the OTP to the user
+  //     bool otpSent = await _bookingRepository.sendBookingOtp(booking.value.id);
+  //
+  //     if (otpSent) {
+  //       // Step 2: If OTP was sent successfully, show the dialog
+  //       _showOtpDialog();
+  //     }
+  //   } catch (e) {
+  //     Get.showSnackbar(Ui.ErrorSnackBar(message: "Failed to send OTP for confirmation"));
+  //   } finally {
+  //     isLoading.value = false; // Hide loading indicator
+  //   }
+  // }
+
+  // In BookingControllerNew class...
+
+  Future<void> promptForOtpAndFinishBooking() async {
+    try {
+      isLoading.value = true; // Show a loading indicator
+      // Step 1: Attempt to call API-1 to send the OTP to the user.
+      // We will not wait for the 'otpSent' boolean result to decide the next step.
+      await _bookingRepository.sendBookingOtp(booking.value.id);
+
+    } catch (e) {
+      // If the API call fails, show an informative snackbar but continue to the dialog.
+      // The user might have a pre-shared OTP or this could be for a test environment.
+      Get.showSnackbar(Ui.ErrorSnackBar(message: "Could not send OTP. You can still enter a valid code.".tr));
+      print("Error sending OTP, but proceeding to dialog anyway: $e");
+    } finally {
+      // No matter what happens (success or failure of OTP sending),
+      // we proceed to show the dialog and hide the loading indicator.
+      isLoading.value = false; // Hide loading indicator
+      _showOtpDialog(); // Step 2: Always show the OTP dialog
+    }
+  }
+
+// NEW: Private helper method to show the OTP dialog
+  void _showOtpDialog() {
+    final TextEditingController otpController = TextEditingController();
+    Get.dialog(
+      AlertDialog(
+        title: Text("Enter OTP".tr),
+        content: TextField(
+          controller: otpController,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            hintText: "Enter the OTP you received".tr,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text("Cancel".tr),
+          ),
+          TextButton(
+            onPressed: () {
+              String otpCode = otpController.text.trim();
+              if (otpCode.isNotEmpty) {
+                Get.back(); // Close the dialog
+                // Step 3: Call the final function with the entered OTP
+                finishBookingServiceWithOtp(otpCode);
+              } else {
+                Get.showSnackbar(Ui.ErrorSnackBar(message: "Please enter the OTP".tr));
+              }
+            },
+            child: Text("Confirm".tr),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+// NEW: This function calls the modified API-2 with the OTP
+  Future<void> finishBookingServiceWithOtp(String otpCode) async {
+    try {
+      isLoading.value = true;
+      final _status = Get.find<BookingsControllerNew>().getStatusByOrder(Get.find<GlobalService>().global.value.done);
+      var _booking = new Booking(id: booking.value.id, endsAt: DateTime.now(), status: _status);
+
+      // Call the new repository method that includes the OTP
+      final result = await _bookingRepository.updateBookingStatusWithOtp(_booking, otpCode);
+
+      booking.update((val) {
+        val.endsAt = result.endsAt;
+        val.duration = result.duration;
+        val.status = _status;
+      });
+      timer?.cancel();
+      Get.showSnackbar(Ui.SuccessSnackBar(message: "Booking finished successfully!".tr));
+    } catch (e) {
+      Get.showSnackbar(Ui.ErrorSnackBar(message: e.toString()));
+    } finally {
+      isLoading.value = false;
     }
   }
 }

@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,11 +7,14 @@ import 'package:get/get.dart';
 import '../../../../common/ui.dart';
 import '../../../models/booking_new_model.dart';
 import '../../../models/review_model.dart';
+import '../../../providers/laravel_provider.dart';
 import '../../../services/auth_service.dart';
 import '../../bookings/controllers/bookings_controller.dart';
 import '../../global_widgets/block_button_widget.dart';
 import '../../global_widgets/text_field_widget.dart';
+import '../../service_request/views/WebViewScreen.dart';
 import '../../tips/tip_controller.dart';
+import '../../tips/view/WebViewScreentips.dart';
 import '../../tips/view/tip_view.dart';
 import '../controllers/provider_rating_controller.dart';
 import '../controllers/rating_controller.dart';
@@ -31,6 +33,7 @@ class ProviderRatingView extends GetView<ProviderRatingController> {
 
   final ValueNotifier<bool> showButton = ValueNotifier<bool>(false);
   final ValueNotifier<bool> showText = ValueNotifier<bool>(false);
+  LaravelApiClient _laravelApiClient = Get.find<LaravelApiClient>();
 
 
   Future<void> _showTipDialog(BuildContext context) async {
@@ -80,6 +83,61 @@ class ProviderRatingView extends GetView<ProviderRatingController> {
 
   @override
   Widget build(BuildContext context) {
+    Future<void> initiateSSLCommerzPaymentFlow(String bookingId) async {
+      if (bookingId == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Booking ID not found!"),
+            duration: Duration(seconds: 2),
+          ),
+        );
+        return;
+      }
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return Dialog(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('Initiating Payment...'),
+                  SizedBox(height: 20),
+                  CircularProgressIndicator(),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+
+      try {
+        final paymentData = await _laravelApiClient.initiateSSLCommerzPaymentForTips(bookingId.toString(), "mobile");
+
+        Navigator.pop(context); // Close the dialog
+
+        final gatewayUrl = paymentData['GatewayPageURL'] as String;
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => WebViewScreentips(url: gatewayUrl, bookingId: bookingId),
+          ),
+        );
+
+      }
+      catch (e) {
+        Navigator.pop(context); // Close the dialog
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error initiating payment: ${e.toString()}'),
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -131,29 +189,6 @@ class ProviderRatingView extends GetView<ProviderRatingController> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // ClipRRect(
-                  //   borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
-                  //   child: CachedNetworkImage(
-                  //     height: 160,
-                  //     width: double.infinity,
-                  //     fit: BoxFit.cover,
-                  //     // imageUrl: controller.booking.value.eService.firstImageUrl,
-                  //     placeholder: (context, url) => Image.asset(
-                  //       'assets/img/loading.gif',
-                  //       fit: BoxFit.cover,
-                  //       width: double.infinity,
-                  //       height: 160,
-                  //     ),
-                  //     errorWidget: (context, url, error) => Icon(Icons.error_outline),
-                  //   ),
-                  // ),
-                  // SizedBox(height: 20),
-                  // Text(
-                  //   // controller.booking.value.eService.name,
-                  //   "Test",
-                  //   style: Get.textTheme.headline6,
-                  //   textAlign: TextAlign.center,
-                  // ),
 
                   SizedBox(height: 20),
                   Text(
@@ -181,62 +216,6 @@ class ProviderRatingView extends GetView<ProviderRatingController> {
                   SizedBox(height: 30)
                 ],
               ),
-              // Obx(
-              //   () =>
-              //       Column(
-              //     crossAxisAlignment: CrossAxisAlignment.center,
-              //     mainAxisAlignment: MainAxisAlignment.center,
-              //     children: [
-              //       ClipRRect(
-              //         borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
-              //         child: CachedNetworkImage(
-              //           height: 160,
-              //           width: double.infinity,
-              //           fit: BoxFit.cover,
-              //           // imageUrl: controller.booking.value.eService.firstImageUrl,
-              //           placeholder: (context, url) => Image.asset(
-              //             'assets/img/loading.gif',
-              //             fit: BoxFit.cover,
-              //             width: double.infinity,
-              //             height: 160,
-              //           ),
-              //           errorWidget: (context, url, error) => Icon(Icons.error_outline),
-              //         ),
-              //       ),
-              //       SizedBox(height: 20),
-              //       Text(
-              //         // controller.booking.value.eService.name,
-              //         "Test",
-              //         style: Get.textTheme.headline6,
-              //         textAlign: TextAlign.center,
-              //       ),
-              //       SizedBox(height: 20),
-              //       Text(
-              //         "Click on the stars to rate this service".tr,
-              //         style: Get.textTheme.caption,
-              //       ),
-              //       SizedBox(height: 6),
-              //       Obx(() {
-              //         return Row(
-              //           mainAxisAlignment: MainAxisAlignment.center,
-              //           children: List.generate(5, (index) {
-              //             return InkWell(
-              //               onTap: () {
-              //                 controller.review.update((val) {
-              //                   val.rate = (index + 1).toDouble();
-              //                 });
-              //               },
-              //               child: index < controller.review.value.rate
-              //                   ? Icon(Icons.star, size: 40, color: Color(0xFFFFB24D))
-              //                   : Icon(Icons.star_border, size: 40, color: Color(0xFFFFB24D)),
-              //             );
-              //           }),
-              //         );
-              //       }),
-              //       SizedBox(height: 30)
-              //     ],
-              //   ),
-              // )
           ),
           TextFieldWidget(
             labelText: "Write your review".tr,
@@ -296,25 +275,6 @@ class ProviderRatingView extends GetView<ProviderRatingController> {
             ],
           ),
 
-          // TextField(
-          //   controller: textFieldController,
-          //   keyboardType: TextInputType.number,
-          //   onChanged: (String text) {
-          //     tipController.setTipText(text);
-          //   },
-          //   decoration: InputDecoration(
-          //     hintText: 'Enter amount',
-          //     contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 100), // Adjust padding as needed
-          //     // Use alignLabelWithHint to align the hint text with the entered text
-          //     alignLabelWithHint: true,
-          //     // Align the entered text to the center
-          //     // hintStyle: TextStyle(textBaseline: ),
-          //   ),
-          //   style: TextStyle(
-          //     fontSize: 16, // Adjust font size as needed
-          //     // Additional style properties if needed
-          //   ),
-          // ),
           SizedBox(height: 10),
           ValueListenableBuilder<bool>(
             valueListenable: showText,
@@ -365,11 +325,11 @@ class ProviderRatingView extends GetView<ProviderRatingController> {
                     String inputText = textFieldController.text;
                     int inputValue = int.parse(inputText);
 
-                    // if(inputValue > 0 && reviewCheck.rate.toString().isNotEmpty && reviewCheck.review.toString().isNotEmpty) {
                     final bool checkgivenReview = await controller.addTipsProviderReview();
 
                     if(inputValue > 0 && checkgivenReview) {
-                      Get.to(TipsView());
+                      // Get.to(TipsView());
+                      initiateSSLCommerzPaymentFlow(Get.find<bkc.BookingControllerNew>().booking.value.id);
                     }
                     else{
                       Get.showSnackbar(Ui.ErrorSnackBar(message: "Total payable amount can't be 0!".tr));

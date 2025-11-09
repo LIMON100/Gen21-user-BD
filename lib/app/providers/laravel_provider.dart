@@ -271,6 +271,31 @@ class LaravelApiClient extends GetxService with ApiClient {
     }
   }
 
+  Future<Map<String, dynamic>> initiateSSLCommerzPaymentForTips(String bookingId, String platform) async {
+    var _queryParameters = {
+      "api_token": authService.apiToken,
+      "booking_id": bookingId,
+      "type": "tips", // Or as per your requirement
+      "platform": platform, // "mobile" for Flutter, "web" for web
+    };
+    Uri _uri = getApiBaseUri("sslcommerz_payment/initiate").replace(queryParameters: _queryParameters);
+    Get.log(_uri.toString());
+
+    print("URL FOR SSL");
+    print(_uri);
+
+    var response = await _httpClient.postUri(_uri, options: _optionsNetwork);
+
+    print("SSLRESPOSNE");
+    print(response.toString());
+
+    if (response.data['success'] == true) {
+      return response.data['data']; // This should contain GatewayPageURL
+    } else {
+      throw Exception(response.data['message']);
+    }
+  }
+
   Future<Map<String, dynamic>> getSSLCommerzStatus(String bookingId) async {
     print("LaravelApiClient: Calling getSSLCommerzStatus for bookingId: $bookingId");
     var _queryParameters = {
@@ -675,31 +700,55 @@ class LaravelApiClient extends GetxService with ApiClient {
   }
 
 
-  Future<bool> sendBookingOtpConfirmation(String bookingId) async {
-    print("LaravelApiClient: Sending OTP for bookingId: $bookingId");
+  Future<bool> sendBookingOtp(String bookingId) async {
+    if (!authService.isAuth) {
+      throw Exception("You don't have permission to access this area!");
+    }
     var _queryParameters = {
-      "api_token": authService.apiToken,
-      "booking_id": bookingId,
-      'version': '2',
+      'api_token': authService.apiToken,
+      'booking_id': bookingId
     };
     Uri _uri = getApiBaseUri("send-booking-otp").replace(queryParameters: _queryParameters);
+    print("Calling Send OTP API: $_uri");
 
-    print("sendBookingOtpConfirmation URL: ${_uri.toString()}");
+    var payload = {"booking_id": bookingId};
 
-    try {
-      var response = await _httpClient.postUri(_uri, options: _optionsNetwork); // POST request
-      print("sendBookingOtpConfirmation response: Status Code = ${response.statusCode}, Data = ${response.data}");
+    var response = await _httpClient.postUri(
+      _uri,
+      data: jsonEncode(payload),
+      options: Options(headers: {'Content-Type': 'application/json'}),
+    );
 
-      if (response.statusCode == 200 && response.data != null && response.data['success'] == true) {
-        print("OTP sent successfully.");
-        return true;
-      } else {
-        print("OTP sending failed: Status code ${response.statusCode}, Response: ${response.data}");
-        throw Exception(response.data['message'] ?? 'Failed to send OTP.');
-      }
-    } catch (e) {
-      print("Exception in sendBookingOtpConfirmation: $e");
-      throw Exception('An error occurred while sending OTP.');
+    print("Send OTP API Response: ${response.data}");
+    if (response.statusCode == 200 && response.data['success'] == true) {
+      return true;
+    } else {
+      throw Exception(response.data['message'] ?? "Failed to send OTP");
+    }
+  }
+
+  Future<Booking> updateBookingStatusWithOtp(Booking booking, String otpCode) async {
+    if (!authService.isAuth) {
+      throw Exception("You don't have the permission to access to this area!");
+    }
+
+    var _queryParameters = {
+      'api_token': authService.apiToken,
+      'booking_id': booking.id,
+      'booking_status_id': booking.status.id,
+      'otp_code': otpCode, // <-- The new OTP parameter
+      'version': '2'
+    };
+    Uri _uri = getApiBaseUri("booking-status-update").replace(queryParameters: _queryParameters);
+    print("Calling Update Status with OTP API: $_uri");
+
+    var response = await _httpClient.postUri(_uri, data: booking.toJson(), options: _optionsNetwork);
+
+    print("Update Status with OTP Response: ${response.data}");
+    if (response.data['success'] == true) {
+      return Booking.fromJson(response.data['data']);
+    } else {
+      throw Exception(response.data['message'] ?? "Failed to update booking status");
     }
   }
 

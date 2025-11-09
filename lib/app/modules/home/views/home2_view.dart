@@ -1,11 +1,8 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter_pusher_client/flutter_pusher.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:pusher_channels_flutter/pusher-js/core/pusher.dart';
-// import 'package:laravel_echo/laravel_echo.dart';
 
 import '../../../../common/ui.dart';
 import '../../../models/slide_model.dart';
@@ -24,8 +21,6 @@ import '../widgets/recommended_carousel_widget.dart';
 import '../widgets/slide_item_widget.dart';
 
 class Home2View extends GetView<HomeController> {
-
-
   @override
   Widget build(BuildContext context) {
     controller.refreshHome2();
@@ -35,10 +30,6 @@ class Home2View extends GetView<HomeController> {
             Get.find<LaravelApiClient>().forceRefresh();
             await controller.refreshHome(showMessage: true);
             Get.find<LaravelApiClient>().unForceRefresh();
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(builder: (context) => PusherView()),
-            // );
           },
           child: CustomScrollView(
             primary: true,
@@ -51,10 +42,6 @@ class Home2View extends GetView<HomeController> {
                 floating: true,
                 // iconTheme: IconThemeData(color: Theme.of(context).primaryColor),
                 title: Container(child: Image(image: AssetImage("assets/icon/icon.png"), height: 50,)),
-                // Text(
-                //   Get.find<SettingsService>().setting.value.appName,
-                //   style: Get.textTheme.headline6,
-                // ),
                 centerTitle: true,
                 automaticallyImplyLeading: false,
                 leading: new IconButton(
@@ -82,14 +69,6 @@ class Home2View extends GetView<HomeController> {
                             },
                           ),
                           items: controller.slider.map((Slide slide) {
-                            // print("hyutopuk_1: slide:" + slide.toString());
-                            // if (slide.eProvider != null) {
-                            //   print("hyutopuk_1: eProvider:" + slide.eProvider.toString());
-                            // } else if (slide.eService != null) {
-                            //   print("hyutopuk_1: eService:" + slide.eService.toString());
-                            // } else if (slide.category != null) {
-                            //   print("hyutopuk_1: category:" + slide.category.toString());
-                            // }
                             return SlideItemWidget(slide: slide);
                           }).toList(),
                         ),
@@ -147,15 +126,7 @@ class Home2View extends GetView<HomeController> {
                         child: Row(
                           children: [
                             Expanded(child: Text("Recommended for you".tr, style: Get.textTheme.headline5)),
-                            // MaterialButton(
-                            //   onPressed: () {
-                            //     Get.toNamed(Routes.CATEGORIES);
-                            //   },
-                            //   shape: StadiumBorder(),
-                            //   color: Get.theme.colorScheme.secondary.withOpacity(0.1),
-                            //   child: Text("View All".tr, style: Get.textTheme.subtitle1),
-                            //   elevation: 0,
-                            // ),
+
                           ],
                         ),
                       ),
@@ -170,7 +141,4 @@ class Home2View extends GetView<HomeController> {
           )),
     );
   }
-
-
-
 }

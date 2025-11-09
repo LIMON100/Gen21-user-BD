@@ -109,9 +109,7 @@ class _sslpaymentState extends State<sslpayment> {
     );
 
     try {
-      // Call your backend for SSLCommerz initiation
-      final paymentData = await _laravelApiClient.initiateSSLCommerzPayment(
-          widget.bookingId.toString(), "mobile");
+      final paymentData = await _laravelApiClient.initiateSSLCommerzPayment(widget.bookingId.toString(), "mobile");
 
       Navigator.pop(context); // Close the dialog
 
@@ -121,11 +119,11 @@ class _sslpaymentState extends State<sslpayment> {
         context,
         MaterialPageRoute(
           builder: (context) => WebViewScreen(url: gatewayUrl, bookingId: widget.bookingId, orderId: widget.orderId),
-          // builder: (context) => WebViewScreen(url: gatewayUrl, bookingId: widget.bookingId),
         ),
       );
 
-    } catch (e) {
+    }
+    catch (e) {
       Navigator.pop(context); // Close the dialog
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

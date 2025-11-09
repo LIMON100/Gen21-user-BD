@@ -22,6 +22,7 @@ class BookingActionsWidgetNew extends GetView<BookingControllerNew> {
     Key key,
   }) : super(key: key);
 
+
   @override
   Widget build(BuildContext context) {
     var _booking = controller.booking;
@@ -102,33 +103,64 @@ class BookingActionsWidgetNew extends GetView<BookingControllerNew> {
                   ),
               ),
 
-            if (_booking.value.status.order == Get.find<GlobalService>().global.value.inProgress)
-              Expanded(
-                child: Container(
-                  margin: EdgeInsets.only(right: 5),
-                  child: BlockButtonWidget(
-                      text: Stack(
-                        alignment: AlignmentDirectional.centerEnd,
-                        children: [
-                          SizedBox(
-                            width: double.infinity,
-                            child: Text(
-                              "Finish".tr,
-                              textAlign: TextAlign.center,
-                              style: Get.textTheme.headline6.merge(
-                                TextStyle(color: Get.theme.primaryColor),
-                              ),
+            // if (_booking.value.status.order == Get.find<GlobalService>().global.value.inProgress)
+            //   Expanded(
+            //     child: Container(
+            //       margin: EdgeInsets.only(right: 5),
+            //       child: BlockButtonWidget(
+            //           text: Stack(
+            //             alignment: AlignmentDirectional.centerEnd,
+            //             children: [
+            //               SizedBox(
+            //                 width: double.infinity,
+            //                 child: Text(
+            //                   "Finish".tr,
+            //                   textAlign: TextAlign.center,
+            //                   style: Get.textTheme.headline6.merge(
+            //                     TextStyle(color: Get.theme.primaryColor),
+            //                   ),
+            //                 ),
+            //               ),
+            //               Icon(Icons.stop, color: Get.theme.primaryColor, size: 24)
+            //             ],
+            //           ),
+            //           color: Get.theme.hintColor,
+            //           onPressed: () {
+            //             controller.finishBookingService();
+            //           }),
+            //     ),
+            //   ),
+                if (_booking.value.status.order == Get.find<GlobalService>().global.value.inProgress)
+                  Expanded(
+                    child: Obx(() { // Wrap with Obx to react to isLoading state
+                      return controller.isLoading.value
+                          ? Center(child: CircularProgressIndicator()) // Show loader when an API is called
+                          : Container(
+                        margin: EdgeInsets.only(right: 5),
+                        child: BlockButtonWidget(
+                            text: Stack(
+                              alignment: AlignmentDirectional.centerEnd,
+                              children: [
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: Text(
+                                    "Finish".tr,
+                                    textAlign: TextAlign.center,
+                                    style: Get.textTheme.headline6.merge(
+                                      TextStyle(color: Get.theme.primaryColor),
+                                    ),
+                                  ),
+                                ),
+                                Icon(Icons.stop, color: Get.theme.primaryColor, size: 24)
+                              ],
                             ),
-                          ),
-                          Icon(Icons.stop, color: Get.theme.primaryColor, size: 24)
-                        ],
-                      ),
-                      color: Get.theme.hintColor,
-                      onPressed: () {
-                        controller.finishBookingService();
-                      }),
-                ),
-              ),
+                            color: Get.theme.hintColor,
+                            onPressed: () {
+                              controller.promptForOtpAndFinishBooking();
+                            }),
+                      );
+                    }),
+                  ),
             if (_booking.value.booking_status_id != "7" && _booking.value.status.order >= Get.find<GlobalService>().global.value.done)
               Expanded(
                 child: Container(

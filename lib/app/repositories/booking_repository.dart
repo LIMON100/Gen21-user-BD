@@ -53,6 +53,14 @@ class BookingRepository {
     return _laravelApiClient.updateBookingNew(booking);
   }
 
+  Future<bool> sendBookingOtp(String bookingId) {
+    return _laravelApiClient.sendBookingOtp(bookingId);
+  }
+
+  Future<Booking> updateBookingStatusWithOtp(Booking booking, String otpCode) {
+    return _laravelApiClient.updateBookingStatusWithOtp(booking, otpCode);
+  }
+
   Future<Coupon> coupon(Booking booking) {
     return _laravelApiClient.validateCoupon(booking);
   }
@@ -61,11 +69,8 @@ class BookingRepository {
     return _laravelApiClient.addReview(review);
   }
 
-
-
   Future<EwayInitiateResponse> initiateEway(var bodyData) {
     return _laravelApiClient.initiateEway(bodyData);
   }
-
 
 }

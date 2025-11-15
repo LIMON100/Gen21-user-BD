@@ -246,11 +246,14 @@ class LaravelApiClient extends GetxService with ApiClient {
     }
   }
 
-  Future<Map<String, dynamic>> initiateSSLCommerzPayment(String bookingId, String platform) async {
+  Future<Map<String, dynamic>> initiateSSLCommerzPayment(String bookingId, String platform, double amount) async {
+    print("PayAmount");
+    print(amount);
     var _queryParameters = {
       "api_token": authService.apiToken,
       "booking_id": bookingId,
       "type": "booking", // Or as per your requirement
+      "amount": amount.toString(),
       "platform": platform, // "mobile" for Flutter, "web" for web
     };
     Uri _uri = getApiBaseUri("sslcommerz_payment/initiate").replace(queryParameters: _queryParameters);
@@ -271,11 +274,14 @@ class LaravelApiClient extends GetxService with ApiClient {
     }
   }
 
-  Future<Map<String, dynamic>> initiateSSLCommerzPaymentForTips(String bookingId, String platform) async {
+  Future<Map<String, dynamic>> initiateSSLCommerzPaymentForTips(String bookingId, String platform, int tipsAmount) async {
+    print("TIPSAMOUNT");
+    print(tipsAmount);
     var _queryParameters = {
       "api_token": authService.apiToken,
       "booking_id": bookingId,
-      "type": "tips", // Or as per your requirement
+      "type": "tips",
+      "amount": tipsAmount.toString(),
       "platform": platform, // "mobile" for Flutter, "web" for web
     };
     Uri _uri = getApiBaseUri("sslcommerz_payment/initiate").replace(queryParameters: _queryParameters);

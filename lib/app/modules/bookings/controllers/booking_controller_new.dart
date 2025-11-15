@@ -162,27 +162,6 @@ class BookingControllerNew extends GetxController {
     }
   }
 
-
-  // Future<void> finishBookingService() async {
-  //   try {
-  //     final _status = Get.find<BookingsControllerNew>().getStatusByOrder(Get.find<GlobalService>().global.value.done);
-  //     var _booking = new Booking(id: booking.value.id, endsAt: DateTime.now(), status: _status);
-  //     print("jsnfjsansdkll booking: ${_booking.toString()}");
-  //
-  //     final result = await _bookingRepository.updateBookingNew(_booking);
-  //     print("jsnfjsansdkll result: ${result.toString()}");
-  //
-  //     booking.update((val) {
-  //       val.endsAt = result.endsAt;
-  //       val.duration = result.duration;
-  //       val.status = _status;
-  //     });
-  //     timer?.cancel();
-  //   } catch (e) {
-  //     Get.showSnackbar(Ui.ErrorSnackBar(message: e.toString()));
-  //   }
-  // }
-
   Future<void> cancelBookingService() async {
     try {
       if (booking.value.status.order < Get.find<GlobalService>().global.value.onTheWay) {
@@ -375,7 +354,25 @@ class BookingControllerNew extends GetxController {
   //   }
   // }
 
-  // In BookingControllerNew class...
+  Future<void> finishBookingService() async {
+    try {
+      final _status = Get.find<BookingsControllerNew>().getStatusByOrder(Get.find<GlobalService>().global.value.done);
+      var _booking = new Booking(id: booking.value.id, endsAt: DateTime.now(), status: _status);
+      print("jsnfjsansdkll booking: ${_booking.toString()}");
+
+      final result = await _bookingRepository.updateBookingNew(_booking);
+      print("jsnfjsansdkll result: ${result.toString()}");
+
+      booking.update((val) {
+        val.endsAt = result.endsAt;
+        val.duration = result.duration;
+        val.status = _status;
+      });
+      timer?.cancel();
+    } catch (e) {
+      Get.showSnackbar(Ui.ErrorSnackBar(message: e.toString()));
+    }
+  }
 
   Future<void> promptForOtpAndFinishBooking() async {
     try {

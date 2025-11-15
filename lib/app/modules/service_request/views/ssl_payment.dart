@@ -109,7 +109,7 @@ class _sslpaymentState extends State<sslpayment> {
     );
 
     try {
-      final paymentData = await _laravelApiClient.initiateSSLCommerzPayment(widget.bookingId.toString(), "mobile");
+      final paymentData = await _laravelApiClient.initiateSSLCommerzPayment(widget.bookingId.toString(), "mobile",  (totalAmount - coupontAmount));
 
       Navigator.pop(context); // Close the dialog
 

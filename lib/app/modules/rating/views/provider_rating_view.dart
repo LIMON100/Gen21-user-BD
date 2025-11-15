@@ -83,7 +83,7 @@ class ProviderRatingView extends GetView<ProviderRatingController> {
 
   @override
   Widget build(BuildContext context) {
-    Future<void> initiateSSLCommerzPaymentFlow(String bookingId) async {
+    Future<void> initiateSSLCommerzPaymentFlow(String bookingId, int tipsAmount) async {
       if (bookingId == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -114,7 +114,7 @@ class ProviderRatingView extends GetView<ProviderRatingController> {
       );
 
       try {
-        final paymentData = await _laravelApiClient.initiateSSLCommerzPaymentForTips(bookingId.toString(), "mobile");
+        final paymentData = await _laravelApiClient.initiateSSLCommerzPaymentForTips(bookingId.toString(), "mobile", tipsAmount);
 
         Navigator.pop(context); // Close the dialog
 
@@ -329,7 +329,7 @@ class ProviderRatingView extends GetView<ProviderRatingController> {
 
                     if(inputValue > 0 && checkgivenReview) {
                       // Get.to(TipsView());
-                      initiateSSLCommerzPaymentFlow(Get.find<bkc.BookingControllerNew>().booking.value.id);
+                      initiateSSLCommerzPaymentFlow(Get.find<bkc.BookingControllerNew>().booking.value.id, inputValue);
                     }
                     else{
                       Get.showSnackbar(Ui.ErrorSnackBar(message: "Total payable amount can't be 0!".tr));

@@ -135,7 +135,7 @@ class _sslpaymentState extends State<sslpayment> {
   }
 
   void callingSettings() async {
-    final response = await http.get(Uri.parse('https://app.gen21.com.au/api/settings'));
+    final response = await http.get(Uri.parse('https://app.gen21.com.au/api/settings?version=2'));
 
     if (response.statusCode == 200) {
       final jsonResponse = json.decode(response.body);
@@ -146,6 +146,8 @@ class _sslpaymentState extends State<sslpayment> {
       double prevousAmount = double.tryParse(widget.amount.toString()) ?? 0.0;
       double couponValue = double.tryParse(widget.totalPayableAmount.toString()) ?? 0.0;
 
+      print("MAINTAICHARGE");
+      print(maintenanceChargeString);
       totalAmount = (prevousAmount + maintenanceCharge) as double;
       coupontAmount = 0.0;
       setState(() {});

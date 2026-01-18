@@ -1879,9 +1879,41 @@ class LaravelApiClient extends GetxService with ApiClient {
     return _uri.toString();
   }
 
+  // Future<List<Notification>> getNotifications() async {
+  //   if (!authService.isAuth) {
+  //     throw new Exception("You don't have the permission to access to this area!".tr + "[ getNotifications() ]");
+  //   }
+  //   var _queryParameters = {
+  //     'search': 'notifiable_id:${authService.user.value.id}',
+  //     'searchFields': 'notifiable_id:=',
+  //     'searchJoin': 'and',
+  //     'orderBy': 'created_at',
+  //     'sortedBy': 'desc',
+  //     'limit': '50',
+  //     'only': 'id;type;data;read_at;created_at',
+  //     'api_token': authService.apiToken,
+  //     'version': '2'
+  //   };
+  //   Uri _uri = getApiBaseUri("notifications").replace(queryParameters: _queryParameters);
+  //   Get.log(_uri.toString());
+  //   printWrapped("sjdnfjsajk ${_uri.toString()}");
+  //
+  //   var response = await _httpClient.getUri(_uri, options: _optionsNetwork);
+  //   printWrapped("sjdnfjsajk ${response.toString()}");
+  //
+  //   if (response.statusCode == 200) {
+  //     return response.data.map<Notification>((obj) => Notification.fromJson(obj)).toList();
+  //   } else {
+  //     print("kdsjknfsdjk exception happen in getNotifications()");
+  //
+  //     throw new Exception(response.data['message']);
+  //   }
+  // }
+
+
   Future<List<Notification>> getNotifications() async {
     if (!authService.isAuth) {
-      throw new Exception("You don't have the permission to access to this area!".tr + "[ getNotifications() ]");
+      throw Exception("You don't have the permission to access to this area!".tr + "[ getNotifications() ]");
     }
     var _queryParameters = {
       'search': 'notifiable_id:${authService.user.value.id}',
@@ -1901,12 +1933,16 @@ class LaravelApiClient extends GetxService with ApiClient {
     var response = await _httpClient.getUri(_uri, options: _optionsNetwork);
     printWrapped("sjdnfjsajk ${response.toString()}");
 
-    if (response.statusCode == 200) {
-      return response.data.map<Notification>((obj) => Notification.fromJson(obj)).toList();
+    // Check the response status and data structure
+    if (response.statusCode == 200 && response.data['success'] == true) {
+      // 1. Access the 'data' key, which holds the list
+      List<dynamic> notificationList = response.data['data'];
+
+      // 2. Now, call .map() on the list
+      return notificationList.map<Notification>((obj) => Notification.fromJson(obj)).toList();
     } else {
       print("kdsjknfsdjk exception happen in getNotifications()");
-
-      throw new Exception(response.data['message']);
+      throw Exception(response.data['message'] ?? 'Failed to get notifications');
     }
   }
 

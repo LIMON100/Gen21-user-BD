@@ -35,7 +35,7 @@ apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    namespace "com.gen21.on_demand_new_service_user"
+    namespace "com.gen21.on_demand_service_user_bd"
     compileSdkVersion 35
     ndkVersion  "26.1.10909125"
 
@@ -59,7 +59,7 @@ android {
 
 
     defaultConfig {
-        applicationId "com.gen21.on_demand_new_service_user"
+        applicationId "com.gen21.on_demand_service_user_bd"
         minSdkVersion 22
         targetSdkVersion 35
         multiDexEnabled true
